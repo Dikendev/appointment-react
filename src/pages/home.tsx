@@ -146,6 +146,13 @@ const initialEvents: Event[] = [
     color: "blue",
     user: user2,
   },
+  {
+    day: "Thu : 26",
+    startHour: "15:30",
+    endHour: "16:00",
+    color: "red",
+    user: user2,
+  },
 ];
 
 export const HomePage = () => {
@@ -193,17 +200,6 @@ export const HomePage = () => {
     console.log("getTheTr", event.target.attributes);
   };
 
-  useEffect(() => {
-    const container = document.querySelector(".container");
-    const swapy = createSwapy(container, {
-      animation: "none",
-    });
-
-    return () => {
-      swapy.destroy();
-    };
-  }, []);
-
   const hours = generateTimes(startTime, endTime, interval);
 
   const daysOfWeek = useMemo(() => WeekDays.generateWeekDays(), []);
@@ -220,44 +216,24 @@ export const HomePage = () => {
     const rowspan = calculateRowSpan(event.startHour, event.endHour);
 
     return (
-      <td
-        key={day}
-        className={`slot ${hour}-${day}`}
-        data-swapy-slot={`${hour}-${day}`}
-        style={{ backgroundColor: event.color }}
-        rowSpan={rowspan}
-      >
-        <div
-          className={`item ${hour}-${day}`}
-          data-swapy-item={`${hour}-${day}`}
-        >
-          <div className="handle" data-swapy-handle>
-            {event.user.name}
-            <br />
-            {`${event.startHour} - ${event.endHour}`}
-          </div>
+      <td key={day} style={{ backgroundColor: event.color }} rowSpan={rowspan}>
+        <div className="handle" data-swapy-handle>
+          {event.user.name}
+          <br />
+          {`${event.startHour} - ${event.endHour}`}
         </div>
       </td>
     );
   };
 
   const renderEmptyCell = () => {
-    const randomNumber = new Date().getTime() + Math.random();
-    console.log("randomNumber", randomNumber);
-
     return (
       <td
         rowSpan={1}
         onClick={(event) => getTheTr(event)}
         onMouseDown={(event) => handleMouseDown(event)}
         onMouseUp={(event) => handleMouseUp(event)}
-        className={`slot ${randomNumber}`}
-        data-swapy-slot={randomNumber}
-      >
-        <div className={`item ${randomNumber}`} data-swapy-item={randomNumber}>
-          <div className="handle" data-swapy-handle></div>
-        </div>
-      </td>
+      ></td>
     );
   };
 
