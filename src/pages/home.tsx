@@ -1,11 +1,4 @@
-import {
-  EventHandler,
-  ReactEventHandler,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { createSwapy } from "swapy";
 import generateTimes from "./hours";
 import { ItemOptions } from "../modal/ItemOptions";
@@ -15,10 +8,22 @@ const startTime = "08:00";
 const endTime = "24:00";
 const interval = 30;
 
-const user1 = {
+export interface User {
+  name: string;
+  appointmentDescription: string;
+  bookingLength?: number;
+  startTime?: string;
+  hours: {
+    startTime: string;
+    endTime: string;
+  }[];
+}
+
+const user1: User = {
   name: "DIEGO",
   appointmentDescription: "Haircut",
   bookingLength: 4,
+  startTime: "08:00",
   hours: [
     {
       startTime: "08:00",
@@ -27,9 +32,11 @@ const user1 = {
   ],
 };
 
-const user2 = {
+const user2: User = {
   name: "Jane Doe",
   appointmentDescription: "Nails",
+  bookingLength: 3,
+  startTime: "13:00",
   hours: [
     {
       startTime: "13:00",
@@ -39,6 +46,8 @@ const user2 = {
 };
 
 const bookingsByHours = [
+  { day: "Sun : 22", bookings: [] },
+  { day: "Mon : 23", bookings: [] },
   {
     day: "Tue : 24",
     bookings: [
@@ -108,9 +117,39 @@ const bookingsByHours = [
       },
     ],
   },
+  { day: "Wed : 25", bookings: [] },
+  { day: "Thu : 26", bookings: [] },
+  { day: "Fri : 27", bookings: [] },
+  { day: "Sat : 28", bookings: [] },
+];
+
+interface Event {
+  day: string;
+  startHour: string;
+  endHour: string;
+  color: string;
+  user: User;
+}
+
+const initialEvents: Event[] = [
+  {
+    day: "Tue : 24",
+    startHour: "08:00",
+    endHour: "09:30",
+    color: "red",
+    user: user1,
+  },
+  {
+    day: "Thu : 26",
+    startHour: "13:00",
+    endHour: "15:00",
+    color: "blue",
+    user: user2,
+  },
 ];
 
 export const HomePage = () => {
+  const [events, setEvents] = useState<Event[]>(initialEvents);
   const [selectedBooking, setSelectedBooking] = useState("nada selecionado");
   const [selectedSlot, setSelectedSlot] = useState("");
   const [rowSpans, setRowSpans] = useState<{ [key: string]: number }>({
@@ -155,80 +194,71 @@ export const HomePage = () => {
   };
 
   useEffect(() => {
-    console.log("useEffect");
     const container = document.querySelector(".container");
     const swapy = createSwapy(container, {
-      animation: "dynamic",
+      animation: "none",
     });
-    swapy.onSwap(({ data }) => {
-      console.log("onSwap", data);
-    });
+
     return () => {
       swapy.destroy();
     };
   }, []);
 
-  const generateDayHours = generateTimes(startTime, endTime, interval);
+  const hours = generateTimes(startTime, endTime, interval);
 
-  const weekDays = useMemo(() => WeekDays.generateWeekDays(), []);
+  const daysOfWeek = useMemo(() => WeekDays.generateWeekDays(), []);
 
-  const functionTest = (hour: string, weekDays: string[]) => {
-    const trs = [];
+  const calculateRowSpan = (startHour: string, endHour: string) => {
+    const startIndex = hours.findIndex((hour) => hour === startHour);
+    const endIndex = hours.findIndex((hour) => hour === endHour);
+    const rowSpan = endIndex - startIndex;
+    const added = rowSpan + 1;
+    return added;
+  };
 
-    for (let i = 0; i <= weekDays.length - 1; i++) {
-      const actualDay = weekDays[i];
-      const sunday = i == 0;
+  const renderDayCell = (day: string, hour: string, event: Event) => {
+    const rowspan = calculateRowSpan(event.startHour, event.endHour);
 
-      const day = bookingsByHours.find((day) => day.day === actualDay);
-      console.log("day", day);
+    return (
+      <td
+        key={day}
+        className={`slot ${hour}-${day}`}
+        data-swapy-slot={`${hour}-${day}`}
+        style={{ backgroundColor: event.color }}
+        rowSpan={rowspan}
+      >
+        <div
+          className={`item ${hour}-${day}`}
+          data-swapy-item={`${hour}-${day}`}
+        >
+          <div className="handle" data-swapy-handle>
+            {event.user.name}
+            <br />
+            {`${event.startHour} - ${event.endHour}`}
+          </div>
+        </div>
+      </td>
+    );
+  };
 
-      if (day) {
-        console.log("day FOUND", day);
-        const rowSpanLength = day.bookings[0].
-        const randomNumber = Math.floor(Math.random() * 100000);
+  const renderEmptyCell = () => {
+    const randomNumber = new Date().getTime() + Math.random();
+    console.log("randomNumber", randomNumber);
 
-        if (hour === day.bookings[0].hour) {
-          trs.push(
-            <td
-              rowSpan={4}
-              onClick={(event) => getTheTr(event)}
-              onMouseDown={(event) => handleMouseDown(event)}
-              onMouseUp={(event) => handleMouseUp(event)}
-              className={`slot ${randomNumber}`}
-              data-swapy-slot={randomNumber}
-            >
-              <div
-                className={`item ${randomNumber}`}
-                data-swapy-item={randomNumber}
-              >
-                <div className="handle" data-swapy-handle>
-                  {day.bookings[0].user ? day.bookings[0].user.name : "empty"}
-                </div>
-              </div>
-            </td>
-          );
-        } else {
-          const newRandomNumber = Math.floor(Math.random() * 100000);
-          console.log("newRandomNumber", newRandomNumber);
-          trs.push(
-            <td
-              className={`slot ${newRandomNumber} empty`}
-              data-swapy-slot={newRandomNumber}
-            >
-              <div
-                className={`item ${newRandomNumber}`}
-                data-swapy-item={newRandomNumber}
-              >
-                <div>=</div>
-              </div>
-            </td>
-          );
-        }
-
-        console.log("hour", hour);
-      }
-    }
-    return trs;
+    return (
+      <td
+        rowSpan={1}
+        onClick={(event) => getTheTr(event)}
+        onMouseDown={(event) => handleMouseDown(event)}
+        onMouseUp={(event) => handleMouseUp(event)}
+        className={`slot ${randomNumber}`}
+        data-swapy-slot={randomNumber}
+      >
+        <div className={`item ${randomNumber}`} data-swapy-item={randomNumber}>
+          <div className="handle" data-swapy-handle></div>
+        </div>
+      </td>
+    );
   };
 
   return (
@@ -236,17 +266,35 @@ export const HomePage = () => {
       <table className="container">
         <thead className="table_header">
           <tr>
-            <th>Hora</th>
-            {weekDays.map((day) => (
+            <th>Horas</th>
+            {daysOfWeek.map((day) => (
               <th key={day}>{day}</th>
             ))}
           </tr>
         </thead>
         <tbody className="table_new">
-          {generateDayHours.map((hour) => (
+          {hours.map((hour) => (
             <tr key={hour}>
               <td>{hour}</td>
-              {functionTest(hour, weekDays)}
+              {daysOfWeek.map((day) => {
+                const existingEvent = events.find(
+                  (event) =>
+                    event.day === day &&
+                    hour >= event.startHour &&
+                    hour <= event.endHour
+                );
+                const event = events.find(
+                  (event) => event.day === day && event.startHour === hour
+                );
+
+                if (existingEvent && event) {
+                  return renderDayCell(day, hour, event);
+                } else if (!existingEvent) {
+                  return renderEmptyCell();
+                }
+
+                return null;
+              })}
             </tr>
           ))}
         </tbody>
