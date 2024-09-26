@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { createSwapy } from "swapy";
+import { useCallback, useContext, useMemo, useState } from "react";
 import generateTimes from "./hours";
 import { ItemOptions } from "../modal/ItemOptions";
 import { WeekDays } from "./week-days";
+import { AddEvent } from "./AddEvent";
+import GlobalContext from "../context/global-context";
 
 const startTime = "08:00";
 const endTime = "24:00";
@@ -19,111 +20,7 @@ export interface User {
   }[];
 }
 
-const user1: User = {
-  name: "DIEGO",
-  appointmentDescription: "Haircut",
-  bookingLength: 4,
-  startTime: "08:00",
-  hours: [
-    {
-      startTime: "08:00",
-      endTime: "09:30",
-    },
-  ],
-};
-
-const user2: User = {
-  name: "Jane Doe",
-  appointmentDescription: "Nails",
-  bookingLength: 3,
-  startTime: "13:00",
-  hours: [
-    {
-      startTime: "13:00",
-      endTime: "14:00",
-    },
-  ],
-};
-
-const bookingsByHours = [
-  { day: "Sun : 22", bookings: [] },
-  { day: "Mon : 23", bookings: [] },
-  {
-    day: "Tue : 24",
-    bookings: [
-      {
-        hour: "08:00",
-        user: user1,
-      },
-      {
-        hour: "08:30",
-        user: user1,
-      },
-      {
-        hour: "09:00",
-        user: user1,
-      },
-      {
-        hour: "09:30",
-        user: user1,
-      },
-      {
-        hour: "10:00",
-        user: null,
-      },
-      {
-        hour: "10:30",
-        user: user2,
-      },
-      {
-        hour: "11:00",
-        user: user2,
-      },
-      {
-        hour: "11:30",
-        user: null,
-      },
-      {
-        hour: "12:00",
-        user: null,
-      },
-      {
-        hour: "12:30",
-        user: null,
-      },
-      {
-        hour: "13:00",
-        user: null,
-      },
-      {
-        hour: "13:30",
-        user: null,
-      },
-      {
-        hour: "14:00",
-        user: null,
-      },
-      {
-        hour: "14:30",
-        user: null,
-      },
-      {
-        hour: "15:00",
-        user: null,
-      },
-      {
-        hour: "15:30",
-        user: null,
-      },
-    ],
-  },
-  { day: "Wed : 25", bookings: [] },
-  { day: "Thu : 26", bookings: [] },
-  { day: "Fri : 27", bookings: [] },
-  { day: "Sat : 28", bookings: [] },
-];
-
-interface Event {
+export interface Event {
   day: string;
   startHour: string;
   endHour: string;
@@ -131,37 +28,16 @@ interface Event {
   user: User;
 }
 
-const initialEvents: Event[] = [
-  {
-    day: "Tue : 24",
-    startHour: "08:00",
-    endHour: "09:30",
-    color: "red",
-    user: user1,
-  },
-  {
-    day: "Thu : 26",
-    startHour: "13:00",
-    endHour: "15:00",
-    color: "blue",
-    user: user2,
-  },
-  {
-    day: "Thu : 26",
-    startHour: "15:30",
-    endHour: "16:00",
-    color: "red",
-    user: user2,
-  },
-];
-
 export const HomePage = () => {
-  const [events, setEvents] = useState<Event[]>(initialEvents);
-  const [selectedBooking, setSelectedBooking] = useState("nada selecionado");
-  const [selectedSlot, setSelectedSlot] = useState("");
+  const [selectedBooking, setSelectedBooking] =
+    useState<string>("nada selecionado");
+  const [selectedSlot, setSelectedSlot] = useState<string>("");
   const [rowSpans, setRowSpans] = useState<{ [key: string]: number }>({
     "12:30": 3,
   });
+  const [newEventModal, setNewEventModal] = useState<boolean>(true);
+
+  const { events } = useContext(GlobalContext);
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
@@ -216,8 +92,13 @@ export const HomePage = () => {
     const rowspan = calculateRowSpan(event.startHour, event.endHour);
 
     return (
-      <td key={day} style={{ backgroundColor: event.color }} rowSpan={rowspan}>
-        <div className="handle" data-swapy-handle>
+      <td
+        className="border border-gray-300 text-center align-middle"
+        key={day}
+        style={{ backgroundColor: event.color }}
+        rowSpan={rowspan}
+      >
+        <div>
           {event.user.name}
           <br />
           {`${event.startHour} - ${event.endHour}`}
@@ -229,29 +110,36 @@ export const HomePage = () => {
   const renderEmptyCell = () => {
     return (
       <td
+        className="bg-white border border-gray-300"
         rowSpan={1}
         onClick={(event) => getTheTr(event)}
         onMouseDown={(event) => handleMouseDown(event)}
         onMouseUp={(event) => handleMouseUp(event)}
-      ></td>
+      >
+        {""}
+      </td>
     );
   };
 
   return (
-    <>
-      <table className="container">
-        <thead className="table_header">
+    <div className="flex flex-col items-center p-4 relative">
+      <table className="min-w-full bg-white border border-gray-300 mt-4">
+        <thead className="bg-gray-800 text-white">
           <tr>
-            <th>Horas</th>
+            <th className="py-2 px-4">Horas</th>
             {daysOfWeek.map((day) => (
-              <th key={day}>{day}</th>
+              <th key={day} className="py-2 px-4">
+                {day}
+              </th>
             ))}
           </tr>
         </thead>
         <tbody className="table_new">
           {hours.map((hour) => (
-            <tr key={hour}>
-              <td>{hour}</td>
+            <tr key={hour} className="even:bg-gray-100">
+              <td className="bg-gray-200 border border-gray-300 py-2 px-4 text-center">
+                {hour}
+              </td>
               {daysOfWeek.map((day) => {
                 const existingEvent = events.find(
                   (event) =>
@@ -275,7 +163,9 @@ export const HomePage = () => {
           ))}
         </tbody>
       </table>
+      {newEventModal && <AddEvent />}
+
       {isModalOpen && <ItemOptions selectedBooking={selectedBooking} />}
-    </>
+    </div>
   );
 };
