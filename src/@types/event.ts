@@ -1,7 +1,7 @@
 import { User } from "./user";
 
 export interface Event {
-  day: string;
+  date: Date;
   startHour: string;
   endHour: string;
   color: string;

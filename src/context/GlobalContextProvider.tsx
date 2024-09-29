@@ -1,27 +1,34 @@
-import { useMemo, useRef, useState } from "react";
 import { user1, user2 } from "./mock-data";
+import { useMemo, useRef, useState } from "react";
 import GlobalContext from "./global-context";
 import generateTimes from "../pages/hours";
-import { WeekDays, WeekDaysList } from "../pages/week-days";
+import { DateUtils, WeekDaysList } from "../pages/week-days";
 import { Event } from "../@types/event";
+
+const today = new Date();
+const tomorrow = new Date(
+  today.getFullYear(),
+  today.getMonth(),
+  today.getDate() + 1
+);
 
 const initialEvents: Event[] = [
   {
-    day: "Tue : 24",
+    date: today,
     startHour: "08:00",
     endHour: "09:30",
     color: "red",
     user: user1,
   },
   {
-    day: "Thu : 26",
+    date: tomorrow,
     startHour: "13:00",
     endHour: "15:00",
     color: "blue",
     user: user2,
   },
   {
-    day: "Thu : 26",
+    date: today,
     startHour: "15:30",
     endHour: "16:00",
     color: "red",
@@ -30,7 +37,7 @@ const initialEvents: Event[] = [
 ];
 
 const START_TIME = "08:00";
-const END_TIME = "24:00";
+const END_TIME = "20:30";
 const INTERVAL = 30;
 
 export interface NextAndPreviousWeek {
@@ -51,37 +58,39 @@ const GlobalContextProvider: React.FC<React.PropsWithChildren<object>> = ({
     week: initialWeek,
     firstDayOfWeek: initialFirst,
     lastDayOfWeek: initialLast,
-  } = useMemo(() => WeekDays.generateWeekDays(), []);
+  } = useMemo(() => DateUtils.generateWeekDays(), []);
+
   const firstDayOfWeek = useRef(initialFirst);
   const lastDayOfWeek = useRef(initialLast);
-
   const [week, setWeek] = useState<WeekDaysList>(initialWeek);
 
   const nextWeek = (): NextAndPreviousWeek => {
-    const result = WeekDays.generateWeekDays(lastDayOfWeek.current);
+    const adding = DateUtils.addDayOrMinus(lastDayOfWeek.current, true);
+    const result = DateUtils.generateWeekDays(adding);
 
-    setWeek(WeekDays.generateWeekDays(lastDayOfWeek.current).week);
+    setWeek(result.week);
 
     lastDayOfWeek.current = result.lastDayOfWeek;
     firstDayOfWeek.current = result.firstDayOfWeek;
 
     return {
-      firstDayOfWeek: result.firstDayOfWeek,
       lastDayOfWeek: result.lastDayOfWeek,
+      firstDayOfWeek: result.firstDayOfWeek,
     };
   };
 
   const previousWeek = (): NextAndPreviousWeek => {
-    const result = WeekDays.generateWeekDays(firstDayOfWeek.current);
+    const minus = DateUtils.addDayOrMinus(firstDayOfWeek.current, false);
+    const result = DateUtils.generateWeekDays(minus);
 
-    setWeek(WeekDays.generateWeekDays(firstDayOfWeek.current).week);
+    setWeek(result.week);
 
     lastDayOfWeek.current = result.lastDayOfWeek;
     firstDayOfWeek.current = result.firstDayOfWeek;
 
     return {
-      firstDayOfWeek: result.firstDayOfWeek,
       lastDayOfWeek: result.lastDayOfWeek,
+      firstDayOfWeek: result.firstDayOfWeek,
     };
   };
 
