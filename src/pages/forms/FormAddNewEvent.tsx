@@ -5,11 +5,11 @@ import EventContext from "../../components/context/event-context";
 
 const FormAddNewEvent = () => {
   const { setEvents, closeModal } = useContext(GlobalContext);
-  const { selectedDay, selectedHour } = useContext(EventContext);
+  const { selectedDate, selectedHour } = useContext(EventContext);
 
   const [formData, setFormData] = useState({
     cliente: "",
-    day: selectedDay,
+    date: selectedDate,
     startHour: selectedHour,
     service: "",
     endHour: "",
@@ -31,7 +31,7 @@ const FormAddNewEvent = () => {
   const validateForm = () => {
     return (
       formData.cliente !== "" &&
-      formData.day !== "" &&
+      formData.date !== null &&
       formData.startHour !== "" &&
       formData.endHour !== "" &&
       formData.service !== ""
@@ -44,6 +44,15 @@ const FormAddNewEvent = () => {
     setFormData({
       ...formData,
       [name]: value,
+    });
+  };
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    setFormData({
+      ...formData,
+      [name]: new Date(value),
     });
   };
 
@@ -102,10 +111,10 @@ const FormAddNewEvent = () => {
             <input
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               type="text"
-              name="day"
-              id="day"
-              value={formData.day}
-              onChange={handleChange}
+              name="date"
+              id="date"
+              value={formData.date.toString()}
+              onChange={handleDateChange}
             />
           </div>
           <div className="mb-4">
