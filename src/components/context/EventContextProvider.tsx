@@ -3,12 +3,12 @@ import EventContext from "./event-context";
 import GlobalContext from "../../context/global-context";
 
 const EventContextProvider: FC<PropsWithChildren<object>> = ({ children }) => {
-  const [selectedDay, setSelectedDay] = useState<string>("");
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedHour, setSelectedHour] = useState<string>("");
   const { setEventModal } = useContext(GlobalContext);
 
-  const openNewEventModal = (day: string, hour: string) => {
-    setSelectedDay(day);
+  const openNewEventModal = (date: Date, hour: string) => {
+    setSelectedDate(date);
     setSelectedHour(hour);
     setEventModal(true);
   };
@@ -16,8 +16,8 @@ const EventContextProvider: FC<PropsWithChildren<object>> = ({ children }) => {
   return (
     <EventContext.Provider
       value={{
-        selectedDay,
-        setSelectedDay,
+        selectedDate,
+        setSelectedDate,
         selectedHour,
         setSelectedHour,
         openNewEventModal,

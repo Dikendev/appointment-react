@@ -22,31 +22,30 @@ const Header = () => {
   const { nextWeek, previousWeek } = useContext(GlobalContext);
   const [monthMessage, setMonthMessage] = useState<string>(MONTH[month]);
 
+  // TODO: Está causando bug nessa lógica.
   const handleOnIncrementMonth = () => {
     const { lastDayOfWeek, firstDayOfWeek } = nextWeek();
     const monthInitial = firstDayOfWeek.getMonth();
     const monthFinal = lastDayOfWeek.getMonth();
 
-    if (month <= 11) {
+    if (month === 12) {
+      setMonth(0);
+      setFullYear((prev) => prev + 1);
+      setMonthMessage(MONTH[monthInitial]);
+    } else {
       if (monthInitial !== monthFinal) {
         setMonth((prev) => prev + 1);
         setMonthMessage(`${MONTH[monthInitial]} - ${MONTH[monthFinal]}`);
       } else {
-        setMonth((prev) => prev + 1);
         setMonthMessage(MONTH[monthInitial]);
       }
-    } else {
-      setMonth(0);
-      setFullYear(fullYear + 1);
-      setMonthMessage(MONTH[monthInitial]);
     }
   };
 
   const handleOnDecrementMonth = () => {
     const { lastDayOfWeek, firstDayOfWeek } = previousWeek();
-
-    const monthInitial = firstDayOfWeek.getMonth() - 1;
-    const monthFinal = lastDayOfWeek.getMonth() - 1;
+    const monthInitial = firstDayOfWeek.getMonth();
+    const monthFinal = lastDayOfWeek.getMonth();
 
     if (month !== 0) {
       if (monthInitial !== monthFinal) {
@@ -54,7 +53,6 @@ const Header = () => {
         setMonth((prev) => prev - 1);
       } else {
         setMonthMessage(MONTH[monthInitial]);
-        setMonth((prev) => prev - 1);
       }
     } else {
       setMonth(11);
@@ -81,7 +79,9 @@ const Header = () => {
           <span className="material-symbols-outlined">chevron_right</span>
         </button>
       </div>
-      {monthMessage} - {fullYear}
+      <div className="w-56 content-center">
+        {monthMessage} - {fullYear}
+      </div>
     </header>
   );
 };

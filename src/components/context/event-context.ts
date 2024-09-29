@@ -1,16 +1,16 @@
 import { createContext, Dispatch, SetStateAction } from "react";
 
 interface EventContextType {
-  selectedDay: string;
-  setSelectedDay: Dispatch<SetStateAction<string>>;
+  selectedDate: Date;
+  setSelectedDate: Dispatch<SetStateAction<Date>>;
   selectedHour: string;
   setSelectedHour: Dispatch<SetStateAction<string>>;
-  openNewEventModal: (day: string, hour: string) => void;
+  openNewEventModal: (day: Date, hour: string) => void;
 }
 
 const EventContext = createContext<EventContextType>({
-  selectedDay: "",
-  setSelectedDay: () => {},
+  selectedDate: new Date(),
+  setSelectedDate: () => {},
   selectedHour: "",
   setSelectedHour: () => {},
   openNewEventModal: () => {},
