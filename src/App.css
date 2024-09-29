@@ -9,6 +9,11 @@
   color: #94fb61;
 }
 
+.data-swapy-highlighted {
+  background-color: #f9f9f9;
+  color: #94fb61;
+}
+
 .table_header {
   background-color: rgb(144, 78, 3);
   color: white;

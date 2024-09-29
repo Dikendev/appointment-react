@@ -1,3 +1,5 @@
+import { WeekDaysList } from "../pages/week-days";
+
 export interface WeekViewProps {
-  daysOfWeek: string[];
+  daysOfWeek: WeekDaysList;
 }

@@ -1,12 +1,12 @@
 import "./App.css";
-import ContextProvider from "./context/context-provider";
+import GlobalContextProvider from "./context/GlobalContextProvider";
 import { HomePage } from "./pages/home";
 
 function App() {
   return (
-    <ContextProvider>
+    <GlobalContextProvider>
       <HomePage />
-    </ContextProvider>
+    </GlobalContextProvider>
   );
 }
 
