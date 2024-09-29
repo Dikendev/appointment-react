@@ -1,4 +1,4 @@
-import { User } from "../pages/home";
+import { User } from "../@types/user";
 
 const user1: User = {
   name: "DIEGO",
