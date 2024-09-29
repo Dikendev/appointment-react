@@ -6,11 +6,10 @@ export type DatesData = {
   lastDayOfWeek: Date;
 };
 
-export type WeekDaysList = Map<Day, FormattedDate>;
+export type WeekDaysList = Map<Day, Date>;
 type Day = string;
-type FormattedDate = string;
 
-export abstract class WeekDays {
+export abstract class DateUtils {
   static #newDate = new Date();
   static #weekDays = WEEK_DAYS;
 
@@ -26,12 +25,9 @@ export abstract class WeekDays {
 
   static generateWeekDays(newDate?: Date): DatesData {
     const indexToStart = this.findIndexToStart(newDate);
-    const weekDaysMap = new Map<string, string>();
+    const weekDaysMap = new Map<string, Date>();
 
     const weekDaysArray = new Array(7).fill(0);
-
-    const simulateLastWeek = new Date(2024, 8, 21);
-    console.log("simulateLastWeek", simulateLastWeek);
 
     let firstDayOfWeek = new Date();
     let lastDayOfWeek = new Date();
@@ -50,7 +46,7 @@ export abstract class WeekDays {
         firstDayOfWeek = new Date(
           currentDate.getFullYear(),
           currentDate.getMonth(),
-          currentDate.getDate() - 1
+          currentDate.getDate()
         );
       }
 
@@ -58,15 +54,12 @@ export abstract class WeekDays {
         lastDayOfWeek = new Date(
           currentDate.getFullYear(),
           currentDate.getMonth(),
-          currentDate.getDate() + 1
+          currentDate.getDate()
         );
       }
 
-      console.log("currentDate", currentDate);
-
       const weekDays = WEEK_DAYS[currentDate.getDay()];
-      const formattedDate = this.formatDate(currentDate.toDateString());
-      weekDaysMap.set(weekDays, formattedDate);
+      weekDaysMap.set(weekDays, currentDate);
     });
 
     return {
@@ -76,7 +69,23 @@ export abstract class WeekDays {
     };
   }
 
-  private static formatDate(time: string): string {
+  static addDayOrMinus(currentDate: Date, isAdding: boolean): Date {
+    if (isAdding) {
+      return new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        currentDate.getDate() + 1
+      );
+    }
+
+    return new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      currentDate.getDate() - 1
+    );
+  }
+
+  static formatDate(time: string): string {
     const timeArray = time.split(" ");
     const filtered = timeArray.slice(2, 3);
     return filtered.join(",").replace(",", " | ");
