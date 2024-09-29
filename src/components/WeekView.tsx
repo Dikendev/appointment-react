@@ -4,15 +4,17 @@ import GlobalContext from "../context/global-context";
 import FormAddNewEvent from "../pages/forms/FormAddNewEvent";
 import EventContextProvider from "./context/EventContextProvider";
 import Header from "./header/Header";
+import { DateUtils } from "../pages/week-days";
 
 export const WeekView = () => {
   const { daysOfWeek, eventModal } = useContext(GlobalContext);
+  console.log("daysOfWeek", daysOfWeek);
 
   const handleClickDay = () => {
     console.log("clicking day");
   };
 
-  const functest = () => {
+  const daysWeek = () => {
     const trs: JSX.Element[] = [];
     daysOfWeek.forEach((day, dayOfWeek) =>
       trs.push(
@@ -25,7 +27,7 @@ export const WeekView = () => {
                 onClick={() => handleClickDay()}
               >
                 {" "}
-                {day}
+                {DateUtils.formatDate(day.toDateString())}
               </span>
             </div>
           </div>
@@ -42,7 +44,7 @@ export const WeekView = () => {
         <thead className="text-black">
           <tr>
             <th key="hours" className="py-2 px-4"></th>
-            {functest()}
+            {daysWeek()}
           </tr>
         </thead>
         <HoursView daysOfWeek={daysOfWeek} />
