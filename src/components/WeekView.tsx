@@ -8,7 +8,6 @@ import { DateUtils } from "../pages/week-days";
 
 export const WeekView = () => {
   const { daysOfWeek, eventModal } = useContext(GlobalContext);
-  console.log("daysOfWeek", daysOfWeek);
 
   const handleClickDay = () => {
     console.log("clicking day");

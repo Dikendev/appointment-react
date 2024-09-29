@@ -11,31 +11,52 @@ const HoursView: FC<WeekViewProps> = (props) => {
   const { openNewEventModal } = useContext(EventContext);
 
   const findForExistingEvent = useCallback(
-    (events: Event[], day: string, hour: string): Event | undefined => {
-      console.log(" executing events");
+    (events: Event[], date: Date, hour: string): Event | undefined => {
       const existStartHour = (event: Event, startHour: string) =>
         startHour >= event.startHour;
       const existEndHour = (event: Event, endHour: string) =>
         endHour <= event.endHour;
 
-      return events.find(
-        (event) =>
-          event.day === day &&
+      return events.find((event) => {
+        const month = event.date.getMonth() + 1;
+        const year = event.date.getFullYear();
+        const day = event.date.getDate();
+
+        const eventDate = `${year}-${month}-${day}`;
+
+        const monthMonth = date.getMonth() + 1;
+        const monthYear = date.getFullYear();
+        const monthDay = date.getDate();
+
+        const targetDate = `${monthYear}-${monthMonth}-${monthDay}`;
+
+        return (
+          eventDate === targetDate &&
           existStartHour(event, hour) &&
           existEndHour(event, hour)
-      );
+        );
+      });
     },
     []
   );
 
-  const findEvent = useCallback(
-    (events: Event[], day: string, hour: string) => {
-      return events.find(
-        (event) => event.day === day && event.startHour === hour
-      );
-    },
-    []
-  );
+  const findEvent = useCallback((events: Event[], date: Date, hour: string) => {
+    return events.find((event) => {
+      const month = event.date.getMonth() + 1;
+      const year = event.date.getFullYear();
+      const day = event.date.getDate();
+
+      const eventDate = `${year}-${month}-${day}`;
+
+      const monthMonth = date.getMonth() + 1;
+      const monthYear = date.getFullYear();
+      const monthDay = date.getDate();
+
+      const targetDate = `${monthYear}-${monthMonth}-${monthDay}`;
+
+      return eventDate === targetDate && event.startHour === hour;
+    });
+  }, []);
 
   const daysWeekArray: string[] = useMemo(() => {
     const daysWeekArray: string[] = [];
@@ -49,9 +70,11 @@ const HoursView: FC<WeekViewProps> = (props) => {
   const memoizedEvents = useMemo(() => {
     return daysWeekArray.reduce((acc, day) => {
       acc[day] = hours.reduce((hourAcc, hour) => {
+        const daySplit = new Date(day.split(" : ")[1]);
+
         hourAcc[hour] = {
-          existingEvent: findForExistingEvent(events, day, hour),
-          event: findEvent(events, day, hour),
+          existingEvent: findForExistingEvent(events, daySplit, hour),
+          event: findEvent(events, daySplit, hour),
         };
         return hourAcc;
       }, {} as Record<string, { existingEvent: Event | undefined; event: Event | undefined }>);
@@ -111,7 +134,9 @@ const HoursView: FC<WeekViewProps> = (props) => {
                   key={`${day}-${hour}-${new Date().getTime()}-empty`}
                   className="bg-white border border-gray-300 w-[30rem]"
                   rowSpan={1}
-                  onClick={() => openNewEventModal(day, hour)}
+                  onClick={() =>
+                    openNewEventModal(new Date(day.split(":")[1]), hour)
+                  }
                 >
                   {""}
                 </td>
