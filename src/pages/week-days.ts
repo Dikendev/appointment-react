@@ -90,4 +90,8 @@ export abstract class DateUtils {
     const filtered = timeArray.slice(2, 3);
     return filtered.join(",").replace(",", " | ");
   }
+
+  static dateAndHour = (date: Date) => {
+    return `${date.getHours()}:${date.getMinutes()}`;
+  };
 }
