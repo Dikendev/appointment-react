@@ -1,28 +1,30 @@
 import { FC, useCallback, useContext, useMemo } from "react";
-import GlobalContext from "../context/global-context";
 import { WeekViewProps } from "../@types/week-view-props";
-import { Event } from "../@types/event";
-import EventContext from "./context/event-context";
+import EventContext from "./context/booking-context";
+import { Booking, Bookings } from "../@types/booking";
+import { DateUtils } from "../pages/week-days";
+import GlobalContext from "./context/global/global-context";
+import { BookingCard } from "./BookingCard";
 
 const HoursView: FC<WeekViewProps> = (props) => {
   const { daysOfWeek } = props;
-  const { hours, events } = useContext(GlobalContext);
+  const { hours, bookings } = useContext(GlobalContext);
 
-  const { openNewEventModal } = useContext(EventContext);
+  const { openNewBookingModal } = useContext(EventContext);
 
   const findForExistingEvent = useCallback(
-    (events: Event[], date: Date, hour: string): Event | undefined => {
-      const existStartHour = (event: Event, startHour: string) =>
-        startHour >= event.startHour;
-      const existEndHour = (event: Event, endHour: string) =>
-        endHour <= event.endHour;
+    (booking: Bookings, date: Date, hour: string): Booking | undefined => {
+      const existStartHour = (booking: Booking, startHour: string) =>
+        startHour >= DateUtils.dateAndHour(booking.startAt);
+      const existEndHour = (booking: Booking, endHour: string) =>
+        endHour <= DateUtils.dateAndHour(booking.finishAt);
 
-      return events.find((event) => {
-        const month = event.date.getMonth() + 1;
-        const year = event.date.getFullYear();
-        const day = event.date.getDate();
+      return booking.find((booking) => {
+        const month = booking.startAt.getMonth() + 1;
+        const year = booking.startAt.getFullYear();
+        const day = booking.startAt.getDate();
 
-        const eventDate = `${year}-${month}-${day}`;
+        const bookingDate = `${year}-${month}-${day}`;
 
         const monthMonth = date.getMonth() + 1;
         const monthYear = date.getFullYear();
@@ -31,32 +33,38 @@ const HoursView: FC<WeekViewProps> = (props) => {
         const targetDate = `${monthYear}-${monthMonth}-${monthDay}`;
 
         return (
-          eventDate === targetDate &&
-          existStartHour(event, hour) &&
-          existEndHour(event, hour)
+          bookingDate === targetDate &&
+          existStartHour(booking, hour) &&
+          existEndHour(booking, hour)
         );
       });
     },
     []
   );
 
-  const findEvent = useCallback((events: Event[], date: Date, hour: string) => {
-    return events.find((event) => {
-      const month = event.date.getMonth() + 1;
-      const year = event.date.getFullYear();
-      const day = event.date.getDate();
+  const findEvent = useCallback(
+    (booking: Bookings, date: Date, hour: string): Booking | undefined => {
+      return booking.find((booking) => {
+        const month = booking.startAt.getMonth() + 1;
+        const year = booking.startAt.getFullYear();
+        const day = booking.startAt.getDate();
 
-      const eventDate = `${year}-${month}-${day}`;
+        const bookingDate = `${year}-${month}-${day}`;
 
-      const monthMonth = date.getMonth() + 1;
-      const monthYear = date.getFullYear();
-      const monthDay = date.getDate();
+        const actualMonth = date.getMonth() + 1;
+        const actualYear = date.getFullYear();
+        const actualDay = date.getDate();
 
-      const targetDate = `${monthYear}-${monthMonth}-${monthDay}`;
+        const targetDate = `${actualYear}-${actualMonth}-${actualDay}`;
 
-      return eventDate === targetDate && event.startHour === hour;
-    });
-  }, []);
+        return (
+          bookingDate === targetDate &&
+          DateUtils.dateAndHour(booking.startAt) === hour
+        );
+      });
+    },
+    []
+  );
 
   const daysWeekArray: string[] = useMemo(() => {
     const daysWeekArray: string[] = [];
@@ -73,14 +81,14 @@ const HoursView: FC<WeekViewProps> = (props) => {
         const daySplit = new Date(day.split(" : ")[1]);
 
         hourAcc[hour] = {
-          existingEvent: findForExistingEvent(events, daySplit, hour),
-          event: findEvent(events, daySplit, hour),
+          existingEvent: findForExistingEvent(bookings, daySplit, hour),
+          booking: findEvent(bookings, daySplit, hour),
         };
         return hourAcc;
-      }, {} as Record<string, { existingEvent: Event | undefined; event: Event | undefined }>);
+      }, {} as Record<string, { existingEvent: Booking | undefined; booking: Booking | undefined }>);
       return acc;
-    }, {} as Record<string, Record<string, { existingEvent: Event | undefined; event: Event | undefined }>>);
-  }, [findEvent, findForExistingEvent, hours, events, daysWeekArray]);
+    }, {} as Record<string, Record<string, { existingEvent: Booking | undefined; booking: Booking | undefined }>>);
+  }, [findEvent, findForExistingEvent, hours, bookings, daysWeekArray]);
 
   const calculateRowSpan = (
     hours: string[],
@@ -105,27 +113,28 @@ const HoursView: FC<WeekViewProps> = (props) => {
             {hour}
           </td>
           {daysWeekArray.map((day) => {
-            const { existingEvent, event } = memoizedEvents[day][hour];
+            const { existingEvent, booking } = memoizedEvents[day][hour];
 
-            if (existingEvent && event) {
+            if (existingEvent && booking) {
               return (
                 <td
                   className="border border-gray-300 text-center align-middle"
                   key={`${day}-${hour}-${
                     new Date().getTime() + Math.random()
-                  }-${event.user.name}`}
-                  style={{ backgroundColor: event.color }}
+                  }-${booking.client.name}`}
+                  style={{ backgroundColor: booking.procedure.color }}
                   rowSpan={calculateRowSpan(
                     hours,
-                    event.startHour,
-                    event.endHour
+                    DateUtils.dateAndHour(booking.startAt),
+                    DateUtils.dateAndHour(booking.finishAt)
                   )}
                 >
-                  <div>
-                    {event.user.name}
-                    <br />
-                    {`${event.startHour} - ${event.endHour}`}
-                  </div>
+                  <BookingCard
+                    client={booking.client}
+                    startAt={booking.startAt}
+                    finishAt={booking.finishAt}
+                    procedure={booking.procedure}
+                  />
                 </td>
               );
             } else if (!existingEvent) {
@@ -135,7 +144,7 @@ const HoursView: FC<WeekViewProps> = (props) => {
                   className="bg-white border border-gray-300 w-[30rem]"
                   rowSpan={1}
                   onClick={() =>
-                    openNewEventModal(new Date(day.split(":")[1]), hour)
+                    openNewBookingModal(new Date(day.split(":")[1]), hour)
                   }
                 >
                   {""}
