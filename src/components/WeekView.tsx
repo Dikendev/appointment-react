@@ -1,16 +1,20 @@
 import { useContext } from "react";
 import HoursView from "./HoursView";
-import GlobalContext from "../context/global-context";
 import FormAddNewEvent from "../pages/forms/FormAddNewEvent";
-import EventContextProvider from "./context/EventContextProvider";
+import EventContextProvider from "./context/BookingContextProvider";
 import Header from "./header/Header";
 import { DateUtils } from "../pages/week-days";
+import GlobalContext from "./context/global/global-context";
 
 export const WeekView = () => {
-  const { daysOfWeek, eventModal } = useContext(GlobalContext);
+  const { daysOfWeek, bookingModal } = useContext(GlobalContext);
 
   const handleClickDay = () => {
     console.log("clicking day");
+  };
+
+  const ifIsToday = (day: Date): boolean => {
+    return new Date(day).toDateString() === new Date().toDateString();
   };
 
   const daysWeek = () => {
@@ -22,10 +26,13 @@ export const WeekView = () => {
             <span>{dayOfWeek}</span>
             <div className="w-full">
               <span
-                className="hover:cursor-pointer hover:bg-gray-100 hover:border hover:border-gray-300 hover:rounded-full p-2 border-none"
+                className={`${
+                  ifIsToday(day)
+                    ? "bg-purple-500 text-white rounded-full p-2"
+                    : "hover:cursor-pointer hover:bg-gray-100 hover:border hover:border-gray-300 p-2 border-none rounded-full"
+                }`}
                 onClick={() => handleClickDay()}
               >
-                {" "}
                 {DateUtils.formatDate(day.toDateString())}
               </span>
             </div>
@@ -48,8 +55,8 @@ export const WeekView = () => {
         </thead>
         <HoursView daysOfWeek={daysOfWeek} />
       </table>
-      {eventModal && (
-        <div className="absolute  inset-0 flex  justify-start items-start h-screen pt-4 pr-1">
+      {bookingModal && (
+        <div className="absolute inset-0 flex  justify-start items-start h-screen pt-4 pr-1">
           <FormAddNewEvent />
         </div>
       )}
