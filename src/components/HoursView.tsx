@@ -77,7 +77,7 @@ const HoursView: FC<WeekViewProps> = (props) => {
 
   const memoizedEvents = useMemo(() => {
     return daysWeekArray.reduce((acc, day) => {
-      acc[day] = hours.reduce((hourAcc, hour) => {
+      acc[day] = hours.formatted.reduce((hourAcc, hour) => {
         const daySplit = new Date(day.split(" : ")[1]);
 
         hourAcc[hour] = {
@@ -104,7 +104,7 @@ const HoursView: FC<WeekViewProps> = (props) => {
 
   return (
     <tbody className="table_new">
-      {hours.map((hour) => (
+      {Array.from(hours.withOriginal.entries()).map(([hour]) => (
         <tr key={`${hour}`} className="even:bg-gray-100">
           <td
             key={`${hour}-${new Date().getTime()}`}
@@ -124,7 +124,7 @@ const HoursView: FC<WeekViewProps> = (props) => {
                   }-${booking.client.name}`}
                   style={{ backgroundColor: booking.procedure.color }}
                   rowSpan={calculateRowSpan(
-                    hours,
+                    hours.formatted,
                     DateUtils.dateAndHour(booking.startAt),
                     DateUtils.dateAndHour(booking.finishAt)
                   )}
