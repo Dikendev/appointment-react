@@ -1,6 +1,6 @@
 import "./App.css";
-import GlobalContextProvider from "./context/GlobalContextProvider";
-import { HomePage } from "./pages/home";
+import GlobalContextProvider from "./components/context/global/GlobalContextProvider";
+import { HomePage } from "./pages/Home";
 
 function App() {
   return (
