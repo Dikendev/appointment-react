@@ -1,3 +1,5 @@
+import MONTH from "../constants/month";
+
 const WEEK_DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export type DatesData = {
@@ -92,6 +94,15 @@ export abstract class DateUtils {
   }
 
   static dateAndHour = (date: Date) => {
-    return `${date.getHours()}:${date.getMinutes()}`;
+    return `${date.getHours().toString().padStart(2, "0")}:${date
+      .getMinutes()
+      .toString()
+      .padStart(2, "0")}`;
+  };
+
+  static shortMonthDescription = (...month: Date[]): string => {
+    return `${MONTH[month[0].getMonth()].slice(0, 3)} - ${MONTH[
+      month[1].getMonth()
+    ].slice(0, 3)}`;
   };
 }
