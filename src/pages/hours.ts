@@ -1,18 +1,26 @@
-const generateTimes = (
-  start: string,
-  end: string,
-  interval: number
-): string[] => {
-  const times: string[] = [];
+export interface Times {
+  withOriginal: Map<string, Date>;
+  formatted: string[];
+}
+
+const generateTimes = (start: string, end: string, interval: number): Times => {
+  const timesWithOriginal: Times = {
+    withOriginal: new Map<string, Date>(),
+    formatted: [],
+  };
 
   const startTime = new Date(`1970/01/01 ${start}`);
   const endTime = new Date(`1970/01/01 ${end}`);
 
   while (startTime < endTime) {
-    times.push(formatTime(startTime));
+    const formattedTime = formatTime(startTime);
+
+    timesWithOriginal.formatted.push(formattedTime);
+    timesWithOriginal.withOriginal.set(formattedTime, new Date(startTime));
     startTime.setMinutes(startTime.getMinutes() + interval);
   }
-  return times;
+
+  return timesWithOriginal;
 };
 
 function formatTime(date: Date): string {
