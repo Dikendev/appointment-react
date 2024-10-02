@@ -3,7 +3,7 @@ import { useMemo, useRef, useState } from "react";
 import GlobalContext from "./global-context";
 import { Bookings } from "../../../@types/booking";
 import generateTimes, { Times } from "../../../pages/hours";
-import { DateUtils, WeekDaysList } from "../../../pages/week-days";
+import { DateUtils, WeekDaysList } from "../../../pages/date-utils";
 import BOOKING_VIEW_TYPE from "../../../constants/booking-view";
 
 const today = new Date();
