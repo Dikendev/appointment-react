@@ -1,6 +1,6 @@
 import MONTH from "../constants/month";
 
-const WEEK_DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+export const WEEK_DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export type DatesData = {
   week: WeekDaysList;
@@ -71,19 +71,26 @@ export abstract class DateUtils {
     };
   }
 
-  static addDayOrMinus(currentDate: Date, isAdding: boolean): Date {
-    if (isAdding) {
-      return new Date(
-        currentDate.getFullYear(),
-        currentDate.getMonth(),
-        currentDate.getDate() + 1
-      );
-    }
+  static generateDays = (date: Date, daysForwardOrBack: number) => {
+    const weekDaysMap = new Map<string, Date>();
 
+    const dateFormatted = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate() + daysForwardOrBack
+    );
+
+    const dayOfWeek = WEEK_DAYS[dateFormatted.getDay()];
+
+    weekDaysMap.set(dayOfWeek, dateFormatted);
+    return weekDaysMap;
+  };
+
+  static addDay(currentDate: Date, numberOfDays: number): Date {
     return new Date(
       currentDate.getFullYear(),
       currentDate.getMonth(),
-      currentDate.getDate() - 1
+      currentDate.getDate() + numberOfDays
     );
   }
 
@@ -104,5 +111,11 @@ export abstract class DateUtils {
     return `${MONTH[month[0].getMonth()].slice(0, 3)} - ${MONTH[
       month[1].getMonth()
     ].slice(0, 3)}`;
+  };
+
+  static getDayFromList = (weekDayList: WeekDaysList): Date | undefined => {
+    const key = weekDayList.keys().next().value;
+    if (!key) return;
+    return weekDayList.get(key);
   };
 }
