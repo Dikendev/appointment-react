@@ -2,15 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.empty {
-  background-color: rgb(0, 154, 93);
-}
-
-.data-swapy-highlighted {
-  background-color: #f9f9f9;
-  color: #94fb61;
-}
-
 a {
   font-weight: 500;
   color: #646cff;

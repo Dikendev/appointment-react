@@ -4,20 +4,3 @@
   padding: 2rem;
   text-align: center;
 }
-
-.selected {
-  color: #94fb61;
-}
-
-.data-swapy-highlighted {
-  background-color: #f9f9f9;
-  color: #94fb61;
-}
-
-.table_header {
-  background-color: rgb(144, 78, 3);
-  color: white;
-}
-.table_new {
-  background-color: rgb(95, 0, 211);
-}
