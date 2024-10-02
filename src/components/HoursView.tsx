@@ -2,7 +2,7 @@ import { FC, useCallback, useContext, useMemo } from "react";
 import { WeekViewProps } from "../@types/week-view-props";
 import EventContext from "./context/booking-context";
 import { Booking, Bookings } from "../@types/booking";
-import { DateUtils } from "../pages/week-days";
+import { DateUtils } from "../pages/date-utils";
 import GlobalContext from "./context/global/global-context";
 import { BookingCard } from "./BookingCard";
 
@@ -102,10 +102,33 @@ const HoursView: FC<WeekViewProps> = (props) => {
     return added;
   };
 
+  const roundMinutes = (minutes: number) => {
+    return minutes >= 30 && minutes < 60 ? `30` : `00`;
+  };
+
+  const comparingTimeWithToday = (date: Date) => {
+    const today = new Date();
+    const nowHour = today.getHours();
+    const nowMinutes = roundMinutes(today.getMinutes());
+
+    const nowFullTime = `${nowHour.toString().padStart(2, "0")}:${nowMinutes
+      .toString()
+      .padStart(2, "0")}`;
+
+    return nowFullTime === DateUtils.dateAndHour(date);
+  };
+
   return (
-    <tbody className="table_new">
-      {Array.from(hours.withOriginal.entries()).map(([hour]) => (
-        <tr key={`${hour}`} className="even:bg-gray-100">
+    <tbody>
+      {Array.from(hours.withOriginal.entries()).map(([hour, date]) => (
+        <tr
+          key={`${hour}`}
+          className={
+            comparingTimeWithToday(date)
+              ? "border-t-purple-600 border-t-[3px]"
+              : "even:bg-gray-100 border-solid "
+          }
+        >
           <td
             key={`${hour}-${new Date().getTime()}`}
             className="bg-gray-200 border border-gray-300 py-2 px-4 text-center"
@@ -118,11 +141,13 @@ const HoursView: FC<WeekViewProps> = (props) => {
             if (existingEvent && booking) {
               return (
                 <td
-                  className="border border-gray-300 text-center align-middle"
+                  className="rounded-sm border-blue-950 text-center align-middle transform -translate-x-0.5 -translate-y-0.5"
                   key={`${day}-${hour}-${
                     new Date().getTime() + Math.random()
                   }-${booking.client.name}`}
-                  style={{ backgroundColor: booking.procedure.color }}
+                  style={{
+                    backgroundColor: booking.procedure.color,
+                  }}
                   rowSpan={calculateRowSpan(
                     hours.formatted,
                     DateUtils.dateAndHour(booking.startAt),
