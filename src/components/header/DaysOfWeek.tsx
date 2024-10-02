@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { DateUtils, WeekDaysList } from "../../pages/week-days";
+import { DateUtils, WeekDaysList } from "../../pages/date-utils";
 
 const DaysWeek: FC<{ daysOfWeek: WeekDaysList }> = (props) => {
   const handleClickDay = (day: Date) => {

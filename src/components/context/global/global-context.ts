@@ -1,6 +1,6 @@
 import { createContext, Dispatch, SetStateAction } from "react";
 import { ActionDay, NextAndPreviousWeek } from "./GlobalContextProvider";
-import { WeekDaysList } from "../../../pages/week-days";
+import { WeekDaysList } from "../../../pages/date-utils";
 import { Bookings } from "../../../@types/booking";
 import { Times } from "../../../pages/hours";
 

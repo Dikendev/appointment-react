@@ -7,7 +7,7 @@ import {
 } from "react";
 import GlobalContext from "../context/global/global-context";
 import MONTH from "../../constants/month";
-import { DateUtils } from "../../pages/week-days";
+import { DateUtils } from "../../pages/date-utils";
 import BOOKING_VIEW_TYPE from "../../constants/booking-view";
 
 export type ActionType = "next" | "previous";

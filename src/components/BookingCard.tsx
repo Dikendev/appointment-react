@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { DateUtils } from "../pages/week-days";
+import { DateUtils } from "../pages/date-utils";
 
 export const BookingCard: FC<{
   client: { name: string };
@@ -9,12 +9,12 @@ export const BookingCard: FC<{
 }> = (props) => {
   const { client, startAt, finishAt } = props;
   return (
-    <div>
+    <>
       {client.name} <br />
       {props.procedure.name} <br />
       {props.procedure.price} reais
       <br />
       {`${DateUtils.dateAndHour(startAt)} - ${DateUtils.dateAndHour(finishAt)}`}
-    </div>
+    </>
   );
 };
