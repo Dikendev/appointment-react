@@ -1,18 +1,33 @@
 import {
   ChangeEvent,
+  Dispatch,
+  FC,
+  SetStateAction,
   useCallback,
   useContext,
   useEffect,
-  useState,
 } from "react";
 import GlobalContext from "../context/global/global-context";
 import MONTH from "../../constants/month";
 import { DateUtils } from "../../pages/date-utils";
 import BOOKING_VIEW_TYPE from "../../constants/booking-view";
+import { DateInfo } from "../WeekView";
 
 export type ActionType = "next" | "previous";
 
-const Header = () => {
+export interface HeaderProps {
+  month: number;
+  fullYear: number;
+  monthMessage: string;
+  setDateInfo: Dispatch<SetStateAction<DateInfo>>;
+}
+
+const Header: FC<HeaderProps> = ({
+  month,
+  fullYear,
+  monthMessage,
+  setDateInfo,
+}) => {
   const {
     todayWeek,
     nextWeek,
@@ -22,12 +37,6 @@ const Header = () => {
     setTodayDay,
     handleDayChange,
   } = useContext(GlobalContext);
-
-  const [dateInfo, setDateInfo] = useState({
-    month: new Date().getMonth(),
-    fullYear: new Date().getFullYear(),
-    monthMessage: "",
-  });
 
   const updateDateInfo = useCallback(
     (targetDate: Date) => {
@@ -217,7 +226,7 @@ const Header = () => {
         </div>
         <div className="w-40 content-center">
           <span className=" text-gray-800 font-bold">
-            {dateInfo.monthMessage} {dateInfo.fullYear}
+            {monthMessage} {fullYear}
           </span>
         </div>
       </div>

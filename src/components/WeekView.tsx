@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import HoursView from "./HoursView";
 import FormAddNewEvent from "../pages/forms/FormAddNewEvent";
 import EventContextProvider from "./context/BookingContextProvider";
@@ -7,18 +7,35 @@ import GlobalContext from "./context/global/global-context";
 import BOOKING_VIEW_TYPE from "../constants/booking-view";
 import DaysWeek from "./header/DaysOfWeek";
 
+export interface DateInfo {
+  month: number;
+  fullYear: number;
+  monthMessage: string;
+}
+
 export const WeekView = () => {
   const { daysOfWeek, bookingModal, bookingType } = useContext(GlobalContext);
 
+  const [dateInfo, setDateInfo] = useState<DateInfo>({
+    month: new Date().getMonth(),
+    fullYear: new Date().getFullYear(),
+    monthMessage: "",
+  });
+
   return (
     <EventContextProvider>
-      <Header />
+      <Header
+        month={dateInfo.month}
+        fullYear={dateInfo.fullYear}
+        monthMessage={dateInfo.monthMessage}
+        setDateInfo={setDateInfo}
+      />
       {bookingType === BOOKING_VIEW_TYPE[1] && (
         <table className="min-w-full w-full bg-white mt-2">
           <thead className="text-black">
             <tr>
               <th key="hours" className="py-2 px-4"></th>
-              <DaysWeek daysOfWeek={daysOfWeek} />
+              <DaysWeek setDateInfo={setDateInfo} daysOfWeek={daysOfWeek} />
             </tr>
           </thead>
           <HoursView daysOfWeek={daysOfWeek} />
@@ -30,7 +47,7 @@ export const WeekView = () => {
           <thead className="text-black">
             <tr>
               <th key="hours" className="py-2 px-4"></th>
-              <DaysWeek daysOfWeek={daysOfWeek} />
+              <DaysWeek setDateInfo={setDateInfo} daysOfWeek={daysOfWeek} />
             </tr>
           </thead>
           <HoursView daysOfWeek={daysOfWeek} />
