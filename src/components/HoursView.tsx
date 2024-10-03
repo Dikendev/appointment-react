@@ -106,7 +106,7 @@ const HoursView: FC<WeekViewProps> = (props) => {
     return minutes >= 30 && minutes < 60 ? `30` : `00`;
   };
 
-  const comparingTimeWithToday = (date: Date) => {
+  const comparingWithTodaysHour = (date: Date) => {
     const today = new Date();
     const nowHour = today.getHours();
     const nowMinutes = roundMinutes(today.getMinutes());
@@ -118,15 +118,42 @@ const HoursView: FC<WeekViewProps> = (props) => {
     return nowFullTime === DateUtils.dateAndHour(date);
   };
 
+  const isToday = (queryDay: Date, todayDate: Date) => {
+    if (
+      queryDay.getDate() === todayDate.getDate() &&
+      queryDay.getMonth() === todayDate.getMonth() &&
+      queryDay.getFullYear() === todayDate.getFullYear()
+    ) {
+      return true;
+    }
+    return false;
+  };
+
+  // essa funcao vai ser responsavel por estilizar os eventos que ainda não aconteceram e os que já aconteceram
+  const styleTest = (booking: Booking, day: Date, hoursTime: Date) => {
+    const today = new Date();
+    const normalizedBookingDate = DateUtils.dateAndHour(booking.finishAt);
+
+    if (isToday(day, today) && normalizedBookingDate <= "11:30") {
+      return {
+        backgroundColor: "#000000c0",
+      };
+    } else {
+      return { backgroundColor: `${booking.procedure.color}` };
+    }
+  };
+
+  // rounded-sm border-blue-950 text-center align-middle transform -translate-x-0.5 -translate-y-0.5 esse o é css para os eventos que ainda não aconteceram
+
   return (
     <tbody>
-      {Array.from(hours.withOriginal.entries()).map(([hour, date]) => (
+      {Array.from(hours.withOriginal.entries()).map(([hour, hoursTime]) => (
         <tr
           key={`${hour}`}
           className={
-            comparingTimeWithToday(date)
+            comparingWithTodaysHour(hoursTime)
               ? "border-t-purple-600 border-t-[3px]"
-              : "even:bg-gray-100 border-solid "
+              : "even:bg-gray-100 border-solid"
           }
         >
           <td
@@ -137,17 +164,17 @@ const HoursView: FC<WeekViewProps> = (props) => {
           </td>
           {daysWeekArray.map((day) => {
             const { existingEvent, booking } = memoizedEvents[day][hour];
-
             if (existingEvent && booking) {
               return (
                 <td
-                  className="rounded-sm border-blue-950 text-center align-middle transform -translate-x-0.5 -translate-y-0.5"
                   key={`${day}-${hour}-${
                     new Date().getTime() + Math.random()
                   }-${booking.client.name}`}
-                  style={{
-                    backgroundColor: booking.procedure.color,
-                  }}
+                  style={styleTest(
+                    booking,
+                    new Date(day.split(":")[1]),
+                    hoursTime
+                  )}
                   rowSpan={calculateRowSpan(
                     hours.formatted,
                     DateUtils.dateAndHour(booking.startAt),
