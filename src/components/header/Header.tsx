@@ -1,11 +1,25 @@
-import { Link, Outlet } from "react-router-dom";
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+} from "@radix-ui/react-navigation-menu";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   return (
-    <div>
-      <Link to={`/`}>Agendamentos</Link>
-      <Link to={`clients`}>Clientes</Link>
-    </div>
+    <NavigationMenu>
+      <NavigationMenuList>
+        <NavigationMenuItem>
+          <Link to="/">
+            <NavigationMenuLink>Agendamentos</NavigationMenuLink>
+          </Link>
+          <Link to="/clients">
+            <NavigationMenuLink>Clientes</NavigationMenuLink>
+          </Link>
+        </NavigationMenuItem>
+      </NavigationMenuList>
+    </NavigationMenu>
   );
 };
 
