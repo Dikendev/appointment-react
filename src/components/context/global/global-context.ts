@@ -1,6 +1,11 @@
-import { createContext, Dispatch, SetStateAction } from "react";
+import {
+  createContext,
+  Dispatch,
+  MutableRefObject,
+  SetStateAction,
+} from "react";
 import { ActionDay, NextAndPreviousWeek } from "./GlobalContextProvider";
-import { WeekDaysList } from "../../../pages/date-utils";
+import { WeekDaysList } from "../../../utils/date-utils";
 import { Bookings } from "../../../@types/booking";
 import { Times } from "../../../pages/hours";
 
@@ -19,6 +24,8 @@ interface GlobalContextType {
   previousWeek: () => NextAndPreviousWeek;
   setTodayDay: (date: Date, daysQuantity: number) => Map<string, Date>;
   handleDayChange: (actionDay: ActionDay) => WeekDaysList | undefined;
+  firstDayOfWeekRef: MutableRefObject<Date>;
+  lastDayOfWeekRef: MutableRefObject<Date>;
 }
 
 const GlobalContext = createContext<GlobalContextType>({
@@ -39,6 +46,8 @@ const GlobalContext = createContext<GlobalContextType>({
   }),
   setTodayDay: () => new Map(),
   handleDayChange: () => new Map(),
+  firstDayOfWeekRef: { current: new Date() },
+  lastDayOfWeekRef: { current: new Date() },
 });
 
 export default GlobalContext;
