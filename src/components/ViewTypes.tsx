@@ -1,9 +1,9 @@
 import { useContext, useState } from "react";
 import HoursView from "./CalendarView";
 import FormAddNewEvent from "../pages/forms/FormAddNewEvent";
-import Header from "./header/Header";
+import Header from "./header-calendar/Header";
 import BOOKING_VIEW_TYPE from "../constants/booking-view";
-import DaysWeek from "./header/DaysOfWeek";
+import DaysWeek from "./header-calendar/DaysOfWeek";
 import AppointmentFilterType from "./AppointmentFilterType";
 import GlobalContext from "../context/global/global-context";
 import EventContextProvider from "../context/BookingContextProvider";

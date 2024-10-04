@@ -1,11 +1,15 @@
+import { Outlet } from "react-router-dom";
 import "./App.css";
+import Header from "./components/header/Header";
 import GlobalContextProvider from "./context/global/GlobalContextProvider";
-import { HomePage } from "./pages/Home";
 
 function App() {
   return (
     <GlobalContextProvider>
-      <HomePage />
+      <Header />
+      <main>
+        <Outlet />
+      </main>
     </GlobalContextProvider>
   );
 }
