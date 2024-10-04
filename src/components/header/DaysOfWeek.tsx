@@ -1,6 +1,6 @@
 import { Dispatch, FC, SetStateAction, useCallback, useContext } from "react";
-import { DateUtils, WeekDaysList } from "../../pages/date-utils";
-import { DateInfo } from "../WeekView";
+import { DateUtils, WeekDaysList } from "../../utils/date-utils";
+import { DateInfo } from "../ViewTypes";
 import GlobalContext from "../context/global/global-context";
 import MONTH from "../../constants/month";
 import BOOKING_VIEW_TYPE from "../../constants/booking-view";

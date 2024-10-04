@@ -1,4 +1,4 @@
-import WeekView from "../components/WeekView";
+import WeekView from "../components/ViewTypes";
 
 export const HomePage = () => {
   return (

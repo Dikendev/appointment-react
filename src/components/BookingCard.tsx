@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { DateUtils } from "../pages/date-utils";
+import { DateUtils } from "../utils/date-utils";
 
 export const BookingCard: FC<{
   client: { name: string };
