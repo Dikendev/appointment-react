@@ -5,9 +5,9 @@ import {
   SetStateAction,
 } from "react";
 import { ActionDay, NextAndPreviousWeek } from "./GlobalContextProvider";
-import { WeekDaysList } from "../../../utils/date-utils";
-import { Bookings } from "../../../@types/booking";
-import { Times } from "../../../pages/hours";
+import { Bookings } from "../../@types/booking";
+import { Times } from "../../pages/hours";
+import { WeekDaysList } from "../../utils/date-utils";
 
 interface GlobalContextType {
   bookings: Bookings;

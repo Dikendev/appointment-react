@@ -1,5 +1,5 @@
 import { createContext, Dispatch, SetStateAction } from "react";
-import { ProcedureModal } from "../../@types/booking";
+import { ProcedureModal } from "../@types/booking";
 
 interface BookingContextType {
   selectedDate: Date;

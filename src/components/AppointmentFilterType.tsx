@@ -1,7 +1,7 @@
 import { CheckedState } from "@radix-ui/react-checkbox";
 import { Checkbox } from "./ui/Checkbox";
 import { useContext } from "react";
-import GlobalContext from "./context/global/global-context";
+import GlobalContext from "../context/global/global-context";
 
 const mockServices = [
   { id: "1", description: "Corte", price: 30, color: "#000" },

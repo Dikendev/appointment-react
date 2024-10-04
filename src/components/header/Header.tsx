@@ -6,7 +6,6 @@ import {
   useContext,
   useEffect,
 } from "react";
-import GlobalContext from "../context/global/global-context";
 import MONTH from "../../constants/month";
 import { DateUtils } from "../../utils/date-utils";
 import BOOKING_VIEW_TYPE from "../../constants/booking-view";
@@ -14,6 +13,7 @@ import { DateInfo } from "../ViewTypes";
 import { Button } from "../ui/Button";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import SelectOptions from "./SelectItem";
+import GlobalContext from "../../context/global/global-context";
 
 export type ActionType = "next" | "previous";
 

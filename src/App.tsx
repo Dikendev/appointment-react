@@ -1,5 +1,5 @@
 import "./App.css";
-import GlobalContextProvider from "./components/context/global/GlobalContextProvider";
+import GlobalContextProvider from "./context/global/GlobalContextProvider";
 import { HomePage } from "./pages/Home";
 
 function App() {

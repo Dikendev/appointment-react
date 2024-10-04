@@ -1,12 +1,12 @@
 import { useContext, useState } from "react";
 import HoursView from "./CalendarView";
 import FormAddNewEvent from "../pages/forms/FormAddNewEvent";
-import EventContextProvider from "./context/BookingContextProvider";
 import Header from "./header/Header";
-import GlobalContext from "./context/global/global-context";
 import BOOKING_VIEW_TYPE from "../constants/booking-view";
 import DaysWeek from "./header/DaysOfWeek";
 import AppointmentFilterType from "./AppointmentFilterType";
+import GlobalContext from "../context/global/global-context";
+import EventContextProvider from "../context/BookingContextProvider";
 
 export interface DateInfo {
   month: number;
@@ -25,7 +25,7 @@ export const WeekView = () => {
 
   return (
     <EventContextProvider>
-      <AppointmentFilterType />
+      {/* <AppointmentFilterType /> */}
       <Header
         month={dateInfo.month}
         fullYear={dateInfo.fullYear}

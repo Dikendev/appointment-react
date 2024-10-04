@@ -1,9 +1,9 @@
 import { useMemo, useRef, useState } from "react";
 import GlobalContext from "./global-context";
-import generateTimes, { Times } from "../../../pages/hours";
-import { DateUtils, WeekDaysList } from "../../../utils/date-utils";
-import BOOKING_VIEW_TYPE from "../../../constants/booking-view";
 import { initialEvents } from "./mock-events";
+import generateTimes, { Times } from "../../pages/hours";
+import BOOKING_VIEW_TYPE from "../../constants/booking-view";
+import { DateUtils, WeekDaysList } from "../../utils/date-utils";
 
 const START_TIME = "08:00";
 const END_TIME = "20:30";

@@ -1,16 +1,16 @@
 import { FC, useCallback, useContext, useMemo } from "react";
 import { WeekViewProps } from "../@types/week-view-props";
-import EventContext from "./context/booking-context";
 import { Booking, Bookings } from "../@types/booking";
 import { DateUtils } from "../utils/date-utils";
-import GlobalContext from "./context/global/global-context";
 import { BookingCard } from "./BookingCard";
+import BookingContext from "../context/booking-context";
+import GlobalContext from "../context/global/global-context";
 
 const CalendarView: FC<WeekViewProps> = (props) => {
   const { daysOfWeek } = props;
   const { hours, bookings } = useContext(GlobalContext);
 
-  const { openNewBookingModal } = useContext(EventContext);
+  const { openNewBookingModal } = useContext(BookingContext);
 
   const findForExistingEvent = useCallback(
     (booking: Bookings, date: Date, hour: string): Booking | undefined => {

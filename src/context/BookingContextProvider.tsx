@@ -1,7 +1,7 @@
 import { FC, PropsWithChildren, useContext, useState } from "react";
 import EventContext from "./booking-context";
-import { ProcedureModal } from "../../@types/booking";
 import GlobalContext from "./global/global-context";
+import { ProcedureModal } from "../@types/booking";
 
 const EventContextProvider: FC<PropsWithChildren<object>> = ({ children }) => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
