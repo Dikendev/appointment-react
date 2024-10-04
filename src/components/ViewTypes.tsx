@@ -1,11 +1,12 @@
 import { useContext, useState } from "react";
-import HoursView from "./HoursView";
+import HoursView from "./CalendarView";
 import FormAddNewEvent from "../pages/forms/FormAddNewEvent";
 import EventContextProvider from "./context/BookingContextProvider";
 import Header from "./header/Header";
 import GlobalContext from "./context/global/global-context";
 import BOOKING_VIEW_TYPE from "../constants/booking-view";
 import DaysWeek from "./header/DaysOfWeek";
+import AppointmentFilterType from "./AppointmentFilterType";
 
 export interface DateInfo {
   month: number;
@@ -24,6 +25,7 @@ export const WeekView = () => {
 
   return (
     <EventContextProvider>
+      <AppointmentFilterType />
       <Header
         month={dateInfo.month}
         fullYear={dateInfo.fullYear}
@@ -41,7 +43,6 @@ export const WeekView = () => {
           <HoursView daysOfWeek={daysOfWeek} />
         </table>
       )}
-
       {bookingType === BOOKING_VIEW_TYPE[0] && (
         <table className="min-w-full w-full bg-white mt-2">
           <thead className="text-black">
@@ -53,7 +54,6 @@ export const WeekView = () => {
           <HoursView daysOfWeek={daysOfWeek} />
         </table>
       )}
-
       {bookingModal && (
         <div className="absolute inset-0 flex justify-start items-start h-screen pt-4 pr-1">
           <FormAddNewEvent />

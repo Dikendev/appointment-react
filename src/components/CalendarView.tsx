@@ -2,11 +2,11 @@ import { FC, useCallback, useContext, useMemo } from "react";
 import { WeekViewProps } from "../@types/week-view-props";
 import EventContext from "./context/booking-context";
 import { Booking, Bookings } from "../@types/booking";
-import { DateUtils } from "../pages/date-utils";
+import { DateUtils } from "../utils/date-utils";
 import GlobalContext from "./context/global/global-context";
 import { BookingCard } from "./BookingCard";
 
-const HoursView: FC<WeekViewProps> = (props) => {
+const CalendarView: FC<WeekViewProps> = (props) => {
   const { daysOfWeek } = props;
   const { hours, bookings } = useContext(GlobalContext);
 
@@ -129,7 +129,6 @@ const HoursView: FC<WeekViewProps> = (props) => {
     return false;
   };
 
-  // essa funcao vai ser responsavel por estilizar os eventos que ainda não aconteceram e os que já aconteceram
   const styleTest = (booking: Booking, day: Date, hoursTime: Date) => {
     const today = new Date();
     const normalizedBookingDate = DateUtils.dateAndHour(booking.finishAt);
@@ -142,8 +141,6 @@ const HoursView: FC<WeekViewProps> = (props) => {
       return { backgroundColor: `${booking.procedure.color}` };
     }
   };
-
-  // rounded-sm border-blue-950 text-center align-middle transform -translate-x-0.5 -translate-y-0.5 esse o é css para os eventos que ainda não aconteceram
 
   return (
     <tbody>
@@ -212,4 +209,4 @@ const HoursView: FC<WeekViewProps> = (props) => {
   );
 };
 
-export default HoursView;
+export default CalendarView;
