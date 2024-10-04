@@ -1,5 +1,4 @@
 import {
-  ChangeEvent,
   Dispatch,
   FC,
   SetStateAction,
@@ -9,9 +8,12 @@ import {
 } from "react";
 import GlobalContext from "../context/global/global-context";
 import MONTH from "../../constants/month";
-import { DateUtils } from "../../pages/date-utils";
+import { DateUtils } from "../../utils/date-utils";
 import BOOKING_VIEW_TYPE from "../../constants/booking-view";
-import { DateInfo } from "../WeekView";
+import { DateInfo } from "../ViewTypes";
+import { Button } from "../ui/Button";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import SelectOptions from "./SelectItem";
 
 export type ActionType = "next" | "previous";
 
@@ -121,11 +123,10 @@ const Header: FC<HeaderProps> = ({
     }
   };
 
-  const handleViewTypeChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    switch (event.target.value) {
+  const handleViewTypeChange = (option: string) => {
+    switch (option) {
       case BOOKING_VIEW_TYPE[0]: {
         setBookingType(BOOKING_VIEW_TYPE[0]);
-
         const dateMap = setTodayDay(new Date(), 0);
         const key = dateMap.keys().next().value;
 
@@ -135,6 +136,7 @@ const Header: FC<HeaderProps> = ({
 
         if (!date) return;
 
+        handleDayChange("today");
         updateDateInfo(date);
         break;
       }
@@ -203,26 +205,25 @@ const Header: FC<HeaderProps> = ({
       <div>LOGO</div>
       <div className="flex flex-row">
         <div className="flex flex-row gap-2">
-          <button
-            className="bg-white hover:bg-gray-100 border-[1px] border-gray-500 border-solid py-2 self-center px-3 flex hover:border-gray-500 focus:outline-0 active:bg-gray-300"
-            onClick={todayDay}
-          >
-            <span className="text-black">Today</span>
-          </button>
-          <button
-            className="bg-white hover:bg-gray-100 border-none rounded-full py-3 px-3 flex focus:bg-gray-200 focus:outline-0"
+          <Button variant="outline" onClick={todayDay}>
+            Today
+          </Button>
+          <Button
+            className="bg-white hover:bg-gray-100 border-none rounded-full py-3 px-3 flex focus:bg-gray-200 focus:outline-0 "
+            variant="default"
+            size="lg"
             onClick={() => handleWeekChange("previous")}
           >
-            <span className="material-symbols-outlined text-gray-500">
-              chevron_left
-            </span>
-          </button>
-          <button
+            <ChevronLeftIcon className="h-4 w-4 text-gray-500" />
+          </Button>
+          <Button
             className="bg-white hover:bg-gray-100 border-none rounded-full py-3 px-3 flex text-gray-500 target:border-none focus:bg-gray-200 focus:outline-0"
+            variant="default"
+            size="lg"
             onClick={() => handleWeekChange("next")}
           >
-            <span className="material-symbols-outlined">chevron_right</span>
-          </button>
+            <ChevronRightIcon className="h-4 w-4 text-gray-500" />
+          </Button>
         </div>
         <div className="w-40 content-center">
           <span className=" text-gray-800 font-bold">
@@ -230,16 +231,10 @@ const Header: FC<HeaderProps> = ({
           </span>
         </div>
       </div>
-      <select
-        value={bookingType}
-        onChange={(event) => handleViewTypeChange(event)}
-      >
-        {BOOKING_VIEW_TYPE.map((type) => (
-          <option value={type} key={type}>
-            {type}
-          </option>
-        ))}
-      </select>
+      <SelectOptions
+        options={BOOKING_VIEW_TYPE}
+        onChange={handleViewTypeChange}
+      />
     </header>
   );
 };
