@@ -1,4 +1,4 @@
-import { Client } from "../../../@types/booking";
+import { Client } from "../../@types/booking";
 
 const user1: Client = {
   id: "12121",

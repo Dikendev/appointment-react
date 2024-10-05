@@ -1,5 +1,4 @@
 import { useContext, useState } from "react";
-import HoursView from "./CalendarView";
 import FormAddNewEvent from "../pages/forms/FormAddNewEvent";
 import Header from "./header-calendar/Header";
 import BOOKING_VIEW_TYPE from "../constants/booking-view";
@@ -7,6 +6,7 @@ import DaysWeek from "./header-calendar/DaysOfWeek";
 import AppointmentFilterType from "./AppointmentFilterType";
 import GlobalContext from "../context/global/global-context";
 import EventContextProvider from "../context/BookingContextProvider";
+import CalendarView from "./CalendarView";
 
 export interface DateInfo {
   month: number;
@@ -14,7 +14,7 @@ export interface DateInfo {
   monthMessage: string;
 }
 
-export const WeekView = () => {
+export const ViewTypes = () => {
   const { daysOfWeek, bookingModal, bookingType } = useContext(GlobalContext);
 
   const [dateInfo, setDateInfo] = useState<DateInfo>({
@@ -40,7 +40,7 @@ export const WeekView = () => {
               <DaysWeek setDateInfo={setDateInfo} daysOfWeek={daysOfWeek} />
             </tr>
           </thead>
-          <HoursView daysOfWeek={daysOfWeek} />
+          <CalendarView daysOfWeek={daysOfWeek} />
         </table>
       )}
       {bookingType === BOOKING_VIEW_TYPE[0] && (
@@ -51,16 +51,16 @@ export const WeekView = () => {
               <DaysWeek setDateInfo={setDateInfo} daysOfWeek={daysOfWeek} />
             </tr>
           </thead>
-          <HoursView daysOfWeek={daysOfWeek} />
+          <CalendarView daysOfWeek={daysOfWeek} />
         </table>
       )}
       {bookingModal && (
         <div className="absolute inset-0 flex justify-start items-start h-screen pt-4 pr-1">
-          <FormAddNewEvent />
+          {/* <FormAddNewEvent /> */}
         </div>
       )}
     </EventContextProvider>
   );
 };
 
-export default WeekView;
+export default ViewTypes;
