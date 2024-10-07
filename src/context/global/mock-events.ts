@@ -1,4 +1,4 @@
-import { Bookings } from "../../../@types/booking";
+import { Bookings } from "../../@types/booking";
 import { user1, user2 } from "./mock-data";
 
 const today = new Date();
@@ -30,6 +30,11 @@ const initialEvents: Bookings = [
       price: 50,
       requiredTimeMin: 90,
     },
+    payment: {
+      type: "credit card",
+      status: "paid",
+    },
+    observation: "",
     total: 50,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -58,6 +63,11 @@ const initialEvents: Bookings = [
       price: 50,
       requiredTimeMin: 90,
     },
+    payment: {
+      type: "debit",
+      status: "unpaid",
+    },
+    observation: "lorem lorem lorem",
     total: 50,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -86,6 +96,11 @@ const initialEvents: Bookings = [
       price: 50,
       requiredTimeMin: 90,
     },
+    payment: {
+      type: "pix",
+      status: "unpaid",
+    },
+    observation: "lorem lorem lorem",
     total: 50,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -114,6 +129,11 @@ const initialEvents: Bookings = [
       price: 530,
       requiredTimeMin: 90,
     },
+    payment: {
+      type: "debit",
+      status: "paid",
+    },
+    observation: "",
     total: 530,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -142,6 +162,11 @@ const initialEvents: Bookings = [
       price: 530,
       requiredTimeMin: 90,
     },
+    payment: {
+      type: "credit card",
+      status: "pending",
+    },
+    observation: "lorem lorem lorem",
     total: 530,
     createdAt: new Date(),
     updatedAt: new Date(),
