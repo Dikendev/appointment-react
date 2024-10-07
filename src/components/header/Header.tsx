@@ -3,20 +3,26 @@ import {
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-} from "@radix-ui/react-navigation-menu";
-import { Link } from "react-router-dom";
+} from "../ui/NavigationMenu";
 
 const Header = () => {
   return (
     <NavigationMenu>
       <NavigationMenuList>
         <NavigationMenuItem>
-          <Link to="/">
-            <NavigationMenuLink>Agendamentos</NavigationMenuLink>
-          </Link>
-          <Link to="/clients">
-            <NavigationMenuLink>Clientes</NavigationMenuLink>
-          </Link>
+          <NavigationMenuLink href="/">Home</NavigationMenuLink>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <NavigationMenuLink href="/">Agendamentos</NavigationMenuLink>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <NavigationMenuLink href="/clients">Clientes</NavigationMenuLink>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <NavigationMenuLink href="/clients">Financeiro</NavigationMenuLink>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <NavigationMenuLink href="/clients">Dashboard</NavigationMenuLink>
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>
