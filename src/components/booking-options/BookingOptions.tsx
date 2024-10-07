@@ -12,6 +12,9 @@ import { MessageSquareText, Pencil, Trash2 } from "lucide-react";
 import { Button } from "../ui/Button";
 import SelectOptions, { ButtonsProps } from "../select-options/SelectOptions";
 import { Booking, PaymentStatus } from "../../@types/booking";
+import { DateUtils, WEEK_DAYS_FULL_NAME } from "../../utils/date-utils";
+import MONTH from "../../constants/month";
+import { StringUtils } from "../../utils/string.utils";
 
 interface BookingOptionsProps {
   side: Side;
@@ -88,6 +91,26 @@ const BookingOptions: FC<BookingOptionsProps> = ({
     }
   };
 
+  const dateToString = () => {
+    return `${DateUtils.dateAndHour(booking.startAt)} - ${DateUtils.dateAndHour(
+      booking.finishAt
+    )}`;
+  };
+
+  const dateInformation = (startAt: Date) => {
+    const date = new Date(startAt);
+    const day = date.getDate();
+    const dayOfWeek = date.getDay();
+    const month = MONTH[date.getMonth()];
+    return <span>{`${WEEK_DAYS_FULL_NAME[dayOfWeek]}, ${day} ${month}`} </span>;
+  };
+
+  const bookingColorSpan = (booking: Booking) => {
+    return {
+      backgroundColor: booking.procedure.color,
+    };
+  };
+
   useEffect(() => {
     handleRenderSide(side);
   }, [handleRenderSide, side]);
@@ -122,7 +145,10 @@ const BookingOptions: FC<BookingOptionsProps> = ({
           </div>
           <div className="mb-1 grid grid-cols-[25px_1fr] items-start pb-1 last:mb-0 last:pb-0">
             <div>
-              <span className="flex h-4 w-4 translate-y-0 rounded-sm bg-sky-500" />
+              <span
+                style={bookingColorSpan(booking)}
+                className="flex h-4 w-4 translate-y-0 rounded-sm"
+              />
             </div>
 
             <div className="space-y-1">
@@ -130,13 +156,13 @@ const BookingOptions: FC<BookingOptionsProps> = ({
                 {booking.client.name}
               </p>
               <p className="text-sm text-muted-foreground">
-                Segunda, 06 outubro - 12:30 - 13:30
+                {dateInformation(booking.startAt)} | {dateToString()}
               </p>
               <p className="text-sm text-muted-foreground">
-                {booking.procedure.name} - {booking.procedure.price} reais.
+                {booking.procedure.name} - {booking.procedure.price} reais
               </p>
               <p className="text-sm text-muted-foreground">
-                {booking.payment.type} -{" "}
+                {StringUtils.capitalize(booking.payment.type)} -{" "}
                 {paymentColorStyleByStatus(booking.payment.status)}
               </p>
             </div>
