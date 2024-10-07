@@ -3,7 +3,7 @@ import "./App.css";
 import Header from "./components/header/Header";
 import GlobalContextProvider from "./context/global/GlobalContextProvider";
 
-function App() {
+const App = () => {
   return (
     <GlobalContextProvider>
       <Header />
@@ -12,6 +12,5 @@ function App() {
       </main>
     </GlobalContextProvider>
   );
-}
-
+};
 export default App;
