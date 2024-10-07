@@ -1,9 +1,29 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, {
+  Dispatch,
+  FC,
+  SetStateAction,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import GlobalContext from "../../context/global/global-context";
 import BookingContext from "../../context/booking-context";
-import { DateUtils } from "../../utils/date-utils";
+import { Button } from "../../components/ui/Button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../../components/ui/Dialog";
+import { Input } from "../../components/ui/Input";
+import { Label } from "../../components/ui/Label";
 
-const FormAddNewEvent = () => {
+const FormAddNewEvent: FC<{
+  closeModals: Dispatch<SetStateAction<boolean>>;
+}> = ({ isOpen, closeModals }) => {
   const { setBookings, closeModal } = useContext(GlobalContext);
   const { selectedHour, procedures, availableHours } =
     useContext(BookingContext);
@@ -92,11 +112,14 @@ const FormAddNewEvent = () => {
   //   });
   // };
 
-  const handleKeyPress = (event: KeyboardEvent) => {
-    if (event.key === "Escape") {
-      closeModal(false);
-    }
-  };
+  const handleKeyPress = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closeModal(false);
+      }
+    },
+    [closeModal]
+  );
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeyPress);
@@ -104,108 +127,44 @@ const FormAddNewEvent = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
-  });
+  }, [handleKeyPress]);
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="w-full max-w-md mx-auto p-4 bg-white shadow-md rounded-md">
-        <div className="w-full flex justify-end text-red-600 font-bold">
-          <span
-            className="cursor-pointer"
-            onClick={() => {
-              closeModal(false);
-            }}
-          >
-            x
-          </span>
+    <Dialog open={true} onOpenChange={closeModals}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Create a new Booking</DialogTitle>
+          <DialogDescription>
+            Make changes to your profile here. Click save when you're done.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="name" className="text-right">
+              Name
+            </Label>
+            <Input
+              id="name"
+              defaultValue="Pedro Duarte"
+              className="col-span-3"
+            />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="username" className="text-right">
+              Username
+            </Label>
+            <Input
+              id="username"
+              defaultValue="@peduarte"
+              className="col-span-3"
+            />
+          </div>
         </div>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label
-              className="block text-sm font-medium text-gray-700"
-              htmlFor="client"
-            >
-              Client
-            </label>
-            <input
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              type="text"
-              name="client"
-              id="client"
-              value={formData.client.name}
-              onChange={handleOnNameChange}
-            />
-          </div>
-          <div className="mb-4">
-            <label
-              htmlFor="startAt"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Hora de inicio
-            </label>
-            <input
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              type="text"
-              name="startAt"
-              id="startAt"
-              value={DateUtils.dateAndHour(formData.startAt)}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="mb-4">
-            <label
-              htmlFor="finishAt"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Hora de fim
-            </label>
-            <select
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              name="finishAt"
-              id="finishAt"
-              value={formData.finishAt}
-              onChange={dateEndChange}
-            >
-              {availableHours.map((hour) => (
-                <option key={hour} value={hour}>
-                  {hour}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="mb-4">
-            <label
-              htmlFor="procedure"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Procedure
-            </label>
-            <select
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              name="procedure"
-              id="procedure"
-              value={formData.procedure}
-              onChange={handleOnProcedureSelect}
-            >
-              {procedures.map((procedure) => (
-                <option key={procedure.name} value={procedure.id}>
-                  {procedure.name} - {procedure.price} reais
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <button
-            className="w-full py-2 px-4 bg-indigo-600 text-white font-bold rounded-md shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50"
-            type="submit"
-          >
-            Adicionar
-          </button>
-        </form>
-      </div>
-    </div>
+        <DialogFooter>
+          <Button type="submit">Save changes</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 
