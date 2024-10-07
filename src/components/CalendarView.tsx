@@ -2,7 +2,6 @@ import { FC, useCallback, useContext, useMemo, useState } from "react";
 import { WeekViewProps } from "../@types/week-view-props";
 import { Booking, Bookings } from "../@types/booking";
 import { DateUtils } from "../utils/date-utils";
-import BookingContext from "../context/booking-context";
 import GlobalContext from "../context/global/global-context";
 import FormAddNewEvent from "../pages/forms/FormAddNewEvent";
 import BookingCard from "./booking-card/BookingCard";
@@ -11,7 +10,6 @@ import EmptyCard from "./empty-card/EmptyCard";
 const CalendarView: FC<WeekViewProps> = (props) => {
   const { daysOfWeek } = props;
   const { hours, bookings } = useContext(GlobalContext);
-  const { openNewBookingModal } = useContext(BookingContext);
   const [modal, setModal] = useState<boolean>(false);
 
   const openModal = () => {
@@ -140,11 +138,7 @@ const CalendarView: FC<WeekViewProps> = (props) => {
                 return (
                   <BookingCard
                     key={`${hour}-${booking.client.id}-booking-parent`}
-                    client={booking.client}
-                    procedure={booking.procedure}
                     booking={booking}
-                    startAt={booking.startAt}
-                    finishAt={booking.finishAt}
                     hoursTime={hoursTime}
                     hours={hours}
                     dateDataStrings={{ day, hour }}

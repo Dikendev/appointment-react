@@ -6,11 +6,7 @@ import BookingOptions, { Side } from "../booking-options/BookingOptions";
 import GlobalContext from "../../context/global/global-context";
 
 interface BookingCardProps {
-  client: { name: string };
-  procedure: { name: string; price: number };
   booking: Booking;
-  startAt: Date;
-  finishAt: Date;
   hoursTime: Date;
   hours: Times;
   dateDataStrings: {
@@ -20,14 +16,10 @@ interface BookingCardProps {
 }
 
 const BookingCard: FC<BookingCardProps> = ({
-  client,
-  startAt,
-  finishAt,
-  procedure,
   booking,
-  dateDataStrings,
   hoursTime,
   hours,
+  dateDataStrings,
 }) => {
   const { bookingType } = useContext(GlobalContext);
   const [isEditingOpen, setIsEditingOpen] = useState<boolean>(false);
@@ -109,19 +101,18 @@ const BookingCard: FC<BookingCardProps> = ({
         )}
         rowSpan={calculateRowSpan(
           hours.formatted,
-          DateUtils.dateAndHour(startAt),
-          DateUtils.dateAndHour(finishAt)
+          DateUtils.dateAndHour(booking.startAt),
+          DateUtils.dateAndHour(booking.finishAt)
         )}
         onClick={() => openEditingModal(dateDataStrings)}
       >
         <div className={`${handleStyleCardContent} text-white`}>
-          <span>{client.name}</span>
-          <span>{procedure.name}</span>
-          <span>{procedure.price} reais</span>
+          <span>{booking.client.name}</span>
+          <span>{booking.procedure.name}</span>
           <span>
-            {`${DateUtils.dateAndHour(startAt)} - ${DateUtils.dateAndHour(
-              finishAt
-            )}`}
+            {`${DateUtils.dateAndHour(
+              booking.startAt
+            )} - ${DateUtils.dateAndHour(booking.finishAt)}`}
           </span>
           <span className="flex flex-row items-center justify-center"></span>
         </div>
