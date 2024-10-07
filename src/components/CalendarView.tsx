@@ -1,16 +1,26 @@
-import { FC, useCallback, useContext, useMemo } from "react";
+import { FC, useCallback, useContext, useMemo, useState } from "react";
 import { WeekViewProps } from "../@types/week-view-props";
 import { Booking, Bookings } from "../@types/booking";
 import { DateUtils } from "../utils/date-utils";
-import { BookingCard } from "./BookingCard";
 import BookingContext from "../context/booking-context";
 import GlobalContext from "../context/global/global-context";
+import FormAddNewEvent from "../pages/forms/FormAddNewEvent";
+import BookingCard from "./booking-card/BookingCard";
+import EmptyCard from "./empty-card/EmptyCard";
 
 const CalendarView: FC<WeekViewProps> = (props) => {
   const { daysOfWeek } = props;
   const { hours, bookings } = useContext(GlobalContext);
-
   const { openNewBookingModal } = useContext(BookingContext);
+  const [modal, setModal] = useState<boolean>(false);
+
+  const openModal = () => {
+    setModal(true);
+  };
+
+  const closeModal = () => {
+    setModal(false);
+  };
 
   const findForExistingEvent = useCallback(
     (booking: Bookings, date: Date, hour: string): Booking | undefined => {
@@ -90,23 +100,11 @@ const CalendarView: FC<WeekViewProps> = (props) => {
     }, {} as Record<string, Record<string, { existingEvent: Booking | undefined; booking: Booking | undefined }>>);
   }, [findEvent, findForExistingEvent, hours, bookings, daysWeekArray]);
 
-  const calculateRowSpan = (
-    hours: string[],
-    startHour: string,
-    endHour: string
-  ) => {
-    const startIndex = hours.findIndex((hour) => hour === startHour);
-    const endIndex = hours.findIndex((hour) => hour === endHour);
-    const rowSpan = endIndex - startIndex;
-    const added = rowSpan + 1;
-    return added;
-  };
-
   const roundMinutes = (minutes: number) => {
     return minutes >= 30 && minutes < 60 ? `30` : `00`;
   };
 
-  const comparingWithTodaysHour = (date: Date) => {
+  const comparingWithTodaysHour = useCallback((date: Date, hour: string) => {
     const today = new Date();
     const nowHour = today.getHours();
     const nowMinutes = roundMinutes(today.getMinutes());
@@ -116,96 +114,65 @@ const CalendarView: FC<WeekViewProps> = (props) => {
       .padStart(2, "0")}`;
 
     return nowFullTime === DateUtils.dateAndHour(date);
-  };
+  }, []);
 
-  const isToday = (queryDay: Date, todayDate: Date) => {
-    if (
-      queryDay.getDate() === todayDate.getDate() &&
-      queryDay.getMonth() === todayDate.getMonth() &&
-      queryDay.getFullYear() === todayDate.getFullYear()
-    ) {
-      return true;
-    }
-    return false;
-  };
-
-  const styleTest = (booking: Booking, day: Date, hoursTime: Date) => {
-    const today = new Date();
-    const normalizedBookingDate = DateUtils.dateAndHour(booking.finishAt);
-
-    if (isToday(day, today) && normalizedBookingDate <= "11:30") {
-      return {
-        backgroundColor: "#000000c0",
-      };
-    } else {
-      return { backgroundColor: `${booking.procedure.color}` };
-    }
-  };
-
-  return (
-    <tbody>
-      {Array.from(hours.withOriginal.entries()).map(([hour, hoursTime]) => (
-        <tr
-          key={`${hour}`}
-          className={
-            comparingWithTodaysHour(hoursTime)
-              ? "border-t-purple-600 border-t-[3px]"
-              : "even:bg-gray-100 border-solid"
-          }
-        >
-          <td
-            key={`${hour}-${new Date().getTime()}`}
-            className="bg-gray-200 border border-gray-300 py-2 px-4 text-center"
+  const TbodyContent = useMemo(() => {
+    return (
+      <tbody key={`t-body`}>
+        {Array.from(hours.withOriginal.entries()).map(([hour, hoursTime]) => (
+          <tr
+            key={`${hour}-content`}
+            className={
+              comparingWithTodaysHour(hoursTime, hour)
+                ? "border-t-purple-600 border-t-[3px]"
+                : "even:bg-gray-100 border-solid"
+            }
           >
-            {hour}
-          </td>
-          {daysWeekArray.map((day) => {
-            const { existingEvent, booking } = memoizedEvents[day][hour];
-            if (existingEvent && booking) {
-              return (
-                <td
-                  key={`${day}-${hour}-${
-                    new Date().getTime() + Math.random()
-                  }-${booking.client.name}`}
-                  style={styleTest(
-                    booking,
-                    new Date(day.split(":")[1]),
-                    hoursTime
-                  )}
-                  rowSpan={calculateRowSpan(
-                    hours.formatted,
-                    DateUtils.dateAndHour(booking.startAt),
-                    DateUtils.dateAndHour(booking.finishAt)
-                  )}
-                >
+            <td
+              key={`${hour}-hour`}
+              className="bg-gray-200 border border-gray-300 py-2 px-4 text-center  w-3 min-w-2"
+            >
+              {hour}
+            </td>
+            {daysWeekArray.map((day) => {
+              const { existingEvent, booking } = memoizedEvents[day][hour];
+              if (existingEvent && booking) {
+                return (
                   <BookingCard
+                    key={`${hour}-${booking.client.id}-booking-parent`}
                     client={booking.client}
+                    procedure={booking.procedure}
+                    booking={booking}
                     startAt={booking.startAt}
                     finishAt={booking.finishAt}
-                    procedure={booking.procedure}
+                    hoursTime={hoursTime}
+                    hours={hours}
+                    dateDataStrings={{ day, hour }}
                   />
-                </td>
-              );
-            } else if (!existingEvent) {
-              return (
-                <td
-                  key={`${day}-${hour}-${new Date().getTime()}-empty`}
-                  className="bg-white border border-gray-300 w-[30rem]"
-                  rowSpan={1}
-                  onClick={() =>
-                    openNewBookingModal(new Date(day.split(":")[1]), hour)
-                  }
-                >
-                  {""}
-                </td>
-              );
-            } else {
-              return null;
-            }
-          })}
-        </tr>
-      ))}
-    </tbody>
+                );
+              } else if (!existingEvent) {
+                return (
+                  <EmptyCard
+                    key={`${day}-${hour}-parent`}
+                    dayHour={{ day, hour }}
+                    openModal={openModal}
+                  />
+                );
+              } else {
+                return null;
+              }
+            })}
+          </tr>
+        ))}
+      </tbody>
+    );
+  }, [hours, comparingWithTodaysHour, daysWeekArray, memoizedEvents]);
+
+  return (
+    <>
+      {modal && <FormAddNewEvent closeModals={closeModal} />}
+      {TbodyContent}
+    </>
   );
 };
 
