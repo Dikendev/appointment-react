@@ -8,7 +8,6 @@ import React, {
   useState,
 } from "react";
 import GlobalContext from "../../context/global/global-context";
-import BookingContext from "../../context/booking-context";
 import { Button } from "../../components/ui/Button";
 import {
   Dialog,
@@ -20,13 +19,23 @@ import {
 } from "../../components/ui/Dialog";
 import { Input } from "../../components/ui/Input";
 import { Label } from "../../components/ui/Label";
+import useBooking from "../../hooks/useBooking";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "../../components/ui/Select";
+import DropDownMenu from "./Dropdown";
 
-const FormAddNewEvent: FC<{
+const CreateNewEvent: FC<{
   closeModals: Dispatch<SetStateAction<boolean>>;
 }> = ({ isOpen, closeModals }) => {
   const { setBookings, closeModal } = useContext(GlobalContext);
-  const { selectedHour, procedures, availableHours } =
-    useContext(BookingContext);
+  const { selectedHour, procedures, availableHours } = useBooking();
 
   const [formData, setFormData] = useState({
     client: { name: "" },
@@ -138,26 +147,52 @@ const FormAddNewEvent: FC<{
             Make changes to your profile here. Click save when you're done.
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
+        <div className="grid gap-2 py-4">
+          <div className="grid grid-cols-4 items-center gap-2">
             <Label htmlFor="name" className="text-right">
-              Name
+              Cliente
             </Label>
-            <Input
-              id="name"
-              defaultValue="Pedro Duarte"
-              className="col-span-3"
-            />
+            <Input disabled id="client" className="col-span-2" />
+            <DropDownMenu dropDownTarget={"Cliente"} />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-2">
+            <Label htmlFor="name" className="text-right">
+              Services
+            </Label>
+            <Select>
+              <SelectTrigger className="col-span-2">
+                <SelectValue placeholder="Nada Selecionado" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Fruits</SelectLabel>
+                  <SelectItem value="apple">Apple</SelectItem>
+                  <SelectItem value="banana">Banana</SelectItem>
+                  <SelectItem value="blueberry">Blueberry</SelectItem>
+                  <SelectItem value="grapes">Grapes</SelectItem>
+                  <SelectItem value="pineapple">Pineapple</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <DropDownMenu dropDownTarget={"Serviço"} />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="username" className="text-right">
-              Username
+              start hour
             </Label>
-            <Input
-              id="username"
-              defaultValue="@peduarte"
-              className="col-span-3"
-            />
+            <Input id="service" className="col-span-3" />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="username" className="text-right">
+              start hour
+            </Label>
+            <Input id="service" className="col-span-3" />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="username" className="text-right">
+              price
+            </Label>
+            <Input id="service" className="col-span-3" />
           </div>
         </div>
         <DialogFooter>
@@ -168,4 +203,4 @@ const FormAddNewEvent: FC<{
   );
 };
 
-export default FormAddNewEvent;
+export default CreateNewEvent;
