@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import Header from "./header-calendar/Header";
 import BOOKING_VIEW_TYPE from "../constants/booking-view";
 import DaysWeek from "./header-calendar/DaysOfWeek";
+import AppointmentFilterType from "./AppointmentFilterType";
 import GlobalContext from "../context/global/global-context";
 import EventContextProvider from "../context/BookingContextProvider";
 import CalendarView from "./CalendarView";
@@ -51,11 +52,6 @@ export const ViewTypes = () => {
           </thead>
           <CalendarView daysOfWeek={daysOfWeek} />
         </table>
-      )}
-      {bookingModal && (
-        <div className="absolute inset-0 flex justify-start items-start h-screen pt-4 pr-1">
-          {/* <FormAddNewEvent /> */}
-        </div>
       )}
     </EventContextProvider>
   );
