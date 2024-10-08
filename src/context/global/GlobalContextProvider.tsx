@@ -1,9 +1,10 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import GlobalContext from "./global-context";
 import { initialEvents } from "./mock-events";
 import generateTimes, { Times } from "../../pages/hours";
 import BOOKING_VIEW_TYPE from "../../constants/booking-view";
 import { DateUtils, WeekDaysList } from "../../utils/date-utils";
+import Loading from "../../pages/loading/Loading";
 
 const START_TIME = "08:00";
 const END_TIME = "20:30";
@@ -132,6 +133,16 @@ const GlobalContextProvider: React.FC<React.PropsWithChildren<object>> = ({
     firstDayOfWeekRef.current = firstDayOfWeek ? firstDayOfWeek : lastDayOfWeek;
   };
 
+  const [isLoading, setIsLoading] = useState(true);
+
+  //simulating
+  useEffect(() => {
+    //fetch all the events initial, to render in system and fill the context.
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+  }, []);
+
   return (
     <GlobalContext.Provider
       value={{
@@ -153,7 +164,7 @@ const GlobalContextProvider: React.FC<React.PropsWithChildren<object>> = ({
         lastDayOfWeekRef,
       }}
     >
-      {children}
+      {isLoading ? <Loading /> : children}
     </GlobalContext.Provider>
   );
 };
