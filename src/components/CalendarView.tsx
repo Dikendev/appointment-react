@@ -3,7 +3,7 @@ import { WeekViewProps } from "../@types/week-view-props";
 import { Booking, Bookings } from "../@types/booking";
 import { DateUtils } from "../utils/date-utils";
 import GlobalContext from "../context/global/global-context";
-import FormAddNewEvent from "../pages/forms/FormAddNewEvent";
+import FormAddNewEvent from "../pages/forms/CreateNewEvent";
 import BookingCard from "./booking-card/BookingCard";
 import EmptyCard from "./empty-card/EmptyCard";
 
@@ -116,7 +116,7 @@ const CalendarView: FC<WeekViewProps> = (props) => {
 
   const TbodyContent = useMemo(() => {
     return (
-      <tbody key={`t-body`}>
+      <>
         {Array.from(hours.withOriginal.entries()).map(([hour, hoursTime]) => (
           <tr
             key={`${hour}-content`}
@@ -158,7 +158,7 @@ const CalendarView: FC<WeekViewProps> = (props) => {
             })}
           </tr>
         ))}
-      </tbody>
+      </>
     );
   }, [hours, comparingWithTodaysHour, daysWeekArray, memoizedEvents]);
 

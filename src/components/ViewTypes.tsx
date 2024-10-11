@@ -2,7 +2,6 @@ import { useContext, useState } from "react";
 import Header from "./header-calendar/Header";
 import BOOKING_VIEW_TYPE from "../constants/booking-view";
 import DaysWeek from "./header-calendar/DaysOfWeek";
-import AppointmentFilterType from "./AppointmentFilterType";
 import GlobalContext from "../context/global/global-context";
 import EventContextProvider from "../context/BookingContextProvider";
 import CalendarView from "./CalendarView";
@@ -31,28 +30,34 @@ export const ViewTypes = () => {
         monthMessage={dateInfo.monthMessage}
         setDateInfo={setDateInfo}
       />
-      {bookingType === BOOKING_VIEW_TYPE[1] && (
-        <table className="min-w-full w-full bg-white mt-2">
-          <thead className="text-black">
-            <tr>
-              <th key="hours" className="py-2 px-4"></th>
-              <DaysWeek setDateInfo={setDateInfo} daysOfWeek={daysOfWeek} />
-            </tr>
-          </thead>
-          <CalendarView daysOfWeek={daysOfWeek} />
-        </table>
-      )}
-      {bookingType === BOOKING_VIEW_TYPE[0] && (
-        <table className="min-w-full w-full bg-white mt-2">
-          <thead className="text-black">
-            <tr>
-              <th key="hours" className="py-2 px-4"></th>
-              <DaysWeek setDateInfo={setDateInfo} daysOfWeek={daysOfWeek} />
-            </tr>
-          </thead>
-          <CalendarView daysOfWeek={daysOfWeek} />
-        </table>
-      )}
+      <div className="relative max-h-[600px] overflow-auto mt-2">
+        {bookingType === BOOKING_VIEW_TYPE[1] && (
+          <table className="min-w-full w-full bg-white no-border-sides">
+            <thead className="text-black sticky top-0 z-10 bg-white">
+              <tr>
+                <th key="hours" className="py-2 px-4"></th>
+                <DaysWeek setDateInfo={setDateInfo} daysOfWeek={daysOfWeek} />
+              </tr>
+            </thead>
+            <tbody>
+              <CalendarView daysOfWeek={daysOfWeek} />
+            </tbody>
+          </table>
+        )}
+        {bookingType === BOOKING_VIEW_TYPE[0] && (
+          <table className="min-w-full w-full bg-white no-border-sides pl-4 pr-4">
+            <thead className="text-black sticky top-0 z-10 bg-white">
+              <tr>
+                <th key="hours" className="py-2 px-4"></th>
+                <DaysWeek setDateInfo={setDateInfo} daysOfWeek={daysOfWeek} />
+              </tr>
+            </thead>
+            <tbody>
+              <CalendarView daysOfWeek={daysOfWeek} />
+            </tbody>
+          </table>
+        )}
+      </div>
     </EventContextProvider>
   );
 };
