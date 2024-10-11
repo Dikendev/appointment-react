@@ -1,11 +1,4 @@
-export type Bookings = Booking[];
-
-export type Payment = {
-  type: "credit card" | "debit" | "pix";
-  status: PaymentStatus;
-};
-
-export type PaymentStatus = "pending" | "paid" | "unpaid";
+import { Client } from "./client";
 
 export interface Booking {
   id: string;
@@ -20,10 +13,12 @@ export interface Booking {
   updatedAt: Date;
 }
 
-export interface Client {
-  id: string;
-  name: string;
-}
+export type Payment = {
+  type: "credit card" | "debit" | "pix";
+  status: PaymentStatus;
+};
+
+export type PaymentStatus = "pending" | "paid" | "unpaid";
 
 export interface Procedure {
   id: string;
@@ -38,3 +33,5 @@ export type ProcedureModal = Omit<
   Procedure,
   "requiredTimeMin" | "procedureImage"
 >;
+
+export type Bookings = Booking[];
