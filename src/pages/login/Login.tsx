@@ -1,23 +1,17 @@
 import { useForm } from "react-hook-form";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "../../components/ui/Form";
-import { Input } from "../../components/ui/Input";
+import { Form } from "../../components/ui/Form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "../../components/ui/Button";
 import useLogin from "../../hooks/useLogin";
+import FormFieldInput from "./FormField";
 
 const formSchema = z.object({
   username: z.string().min(2).max(50),
   password: z.string().min(4).max(50),
 });
+
+type Login = "username" | "password";
 
 const Login = () => {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -27,6 +21,7 @@ const Login = () => {
       password: "",
     },
   });
+
   const { login } = useLogin();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -48,34 +43,8 @@ const Login = () => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-8 max-w-60"
         >
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Username</FormLabel>
-                <FormControl>
-                  <Input placeholder="Username" {...field} />
-                </FormControl>
-                <FormDescription>Username Form description</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input placeholder="Password" {...field} />
-                </FormControl>
-                <FormDescription>Password form description</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <FormFieldInput form={form} label="username" name="username" />
+          <FormFieldInput form={form} label="password" name="password" />
           <Button type="submit">Submit</Button>
         </form>
       </Form>
