@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Progress } from "../../components/ui/ProgressBar";
+import { Progress } from "../ui/ProgressBar";
 
 const Loading = () => {
   const [progress, setProgress] = useState(13);
