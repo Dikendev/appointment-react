@@ -1,4 +1,5 @@
 import { Client } from "./client";
+import { Procedure } from "./procedure";
 
 export interface Booking {
   id: string;
@@ -19,15 +20,6 @@ export type Payment = {
 };
 
 export type PaymentStatus = "pending" | "paid" | "unpaid";
-
-export interface Procedure {
-  id: string;
-  color: string;
-  name: string;
-  price: number;
-  requiredTimeMin: number;
-  procedureImage?: string;
-}
 
 export type ProcedureModal = Omit<
   Procedure,
