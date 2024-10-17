@@ -2,7 +2,7 @@ import { FC, PropsWithChildren, useCallback, useState } from "react";
 import LoginContext from "./login-context";
 import { logout } from "../../../services/logout";
 import { toast } from "../../../hooks/useToast";
-import { LoginDto, signIn } from "../../../services/sign-in";
+import { LoginDto, login as loginApi } from "../../../services/login";
 import { useNavigate } from "react-router-dom";
 
 const LoginContextProvider: FC<PropsWithChildren<object>> = ({ children }) => {
@@ -16,7 +16,7 @@ const LoginContextProvider: FC<PropsWithChildren<object>> = ({ children }) => {
 
   const login = async (loginDto: LoginDto) => {
     try {
-      const userData = await signIn(loginDto);
+      const userData = await loginApi(loginDto);
 
       saveEmail(userData.profile.email);
 
@@ -26,6 +26,7 @@ const LoginContextProvider: FC<PropsWithChildren<object>> = ({ children }) => {
         description: "Welcome back!",
       });
     } catch (error) {
+      console.warn(error);
       toast({
         title: "Login failed",
         description: "Please check your credentials and try again.",

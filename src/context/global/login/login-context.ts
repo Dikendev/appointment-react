@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { LoginDto } from "../../../services/sign-in";
+import { LoginDto } from "../../../services/login";
 
 interface LoginContextType {
   saveEmail: (email: string) => void;
