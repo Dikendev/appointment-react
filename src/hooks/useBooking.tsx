@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import BookingContext from "../context/booking-context";
+import BookingContext from "../context/booking/booking-context";
 
 const useBooking = () => {
   const {
@@ -12,6 +12,8 @@ const useBooking = () => {
     setProcedures,
     availableHours,
     setAvailableHours,
+    eventModal,
+    closeEventModal,
   } = useContext(BookingContext);
 
   return {
@@ -24,6 +26,8 @@ const useBooking = () => {
     setProcedures,
     availableHours,
     setAvailableHours,
+    eventModal,
+    closeEventModal,
   };
 };
 

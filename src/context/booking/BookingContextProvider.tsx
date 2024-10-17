@@ -1,14 +1,14 @@
-import { FC, PropsWithChildren, useContext, useState } from "react";
-import EventContext from "./booking-context";
-import GlobalContext from "./global/global-context";
-import { ProcedureModal } from "../@types/booking";
+import { FC, PropsWithChildren, useState } from "react";
+import { ProcedureModal } from "../../@types/booking";
+import BookingContext from "./booking-context";
 
-const EventContextProvider: FC<PropsWithChildren<object>> = ({ children }) => {
+const BookingContextProvider: FC<PropsWithChildren<object>> = ({
+  children,
+}) => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedHour, setSelectedHour] = useState<string>("");
-  const { setBookingModal } = useContext(GlobalContext);
+  const [eventModal, setEventModal] = useState<boolean>(false);
 
-  //essas horas vai vir do backend para o dia que o usuario selecionar, vou buscar os horários disponiveis para aquele dia
   const procedureDefault = [
     {
       id: "0",
@@ -20,11 +20,12 @@ const EventContextProvider: FC<PropsWithChildren<object>> = ({ children }) => {
 
   const [procedures, setProcedures] = useState<ProcedureModal[]>([
     ...procedureDefault,
-    { id: "1", name: "Corte", price: 30, color: "#000" },
-    { id: "2", name: "Coloração", price: 50, color: "#f00" },
-    { id: "3", name: "Escova", price: 20, color: "#0f0" },
-    { id: "4", name: "Sobrancelha", price: 30, color: "#00f" },
+    // ...procedureMock,
   ]);
+
+  const closeEventModal = () => {
+    setEventModal(false);
+  };
 
   //essas horas vai vir do backend para o dia que o usuario selecionar, vou buscar os horários disponiveis para aquele dia
   const [availableHours, setAvailableHours] = useState<string[]>([
@@ -43,26 +44,28 @@ const EventContextProvider: FC<PropsWithChildren<object>> = ({ children }) => {
   const openNewBookingModal = (date: Date, hour: string) => {
     setSelectedDate(date);
     setSelectedHour(hour);
-    setBookingModal(true);
+    setEventModal(true);
   };
 
   return (
-    <EventContext.Provider
+    <BookingContext.Provider
       value={{
         selectedDate,
         setSelectedDate,
         selectedHour,
         setSelectedHour,
+        eventModal,
         openNewBookingModal,
         procedures,
         setProcedures,
         availableHours,
         setAvailableHours,
+        closeEventModal,
       }}
     >
       {children}
-    </EventContext.Provider>
+    </BookingContext.Provider>
   );
 };
 
-export default EventContextProvider;
+export default BookingContextProvider;
