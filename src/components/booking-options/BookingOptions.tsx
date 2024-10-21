@@ -64,19 +64,19 @@ const BookingOptions: FC<BookingOptionsProps> = ({
 
   const paymentColorStyleByStatus = (paymentStatus: PaymentStatus) => {
     switch (paymentStatus) {
-      case "paid":
+      case "PAID":
         return (
           <span className="text-green-700 font-bold">
             {booking.payment.status}
           </span>
         );
-      case "pending":
+      case "PENDING":
         return (
           <span className="text-yellow-700 font-bold">
             {booking.payment.status}
           </span>
         );
-      case "unpaid":
+      case "UNPAID":
         return (
           <span className="text-red-700 font-bold">
             {booking.payment.status}
