@@ -1,24 +1,18 @@
-import { FC, useCallback, useContext, useMemo, useState } from "react";
+import { useCallback, useMemo, lazy, Suspense } from "react";
 import { WeekViewProps } from "../@types/week-view-props";
 import { Booking, Bookings } from "../@types/booking";
 import { DateUtils } from "../utils/date-utils";
-import GlobalContext from "../context/global/global-context";
-import FormAddNewEvent from "../pages/forms/CreateNewEvent";
 import BookingCard from "./booking-card/BookingCard";
 import EmptyCard from "./empty-card/EmptyCard";
+import useBooking from "../hooks/useBooking";
+import useGlobal from "../hooks/useGlobal";
 
-const CalendarView: FC<WeekViewProps> = (props) => {
-  const { daysOfWeek } = props;
-  const { hours, bookings } = useContext(GlobalContext);
-  const [modal, setModal] = useState<boolean>(false);
+const LazyNewEventForm = lazy(() => import("../pages/forms/NewEventForm"));
 
-  const openModal = () => {
-    setModal(true);
-  };
+const CalendarView = ({ daysOfWeek, bookings }: WeekViewProps) => {
+  const { hours } = useGlobal();
 
-  const closeModal = () => {
-    setModal(false);
-  };
+  const { eventModal, openNewBookingModal } = useBooking();
 
   const findForExistingEvent = useCallback(
     (booking: Bookings, date: Date, hour: string): Booking | undefined => {
@@ -28,9 +22,9 @@ const CalendarView: FC<WeekViewProps> = (props) => {
         endHour <= DateUtils.dateAndHour(booking.finishAt);
 
       return booking.find((booking) => {
-        const month = booking.startAt.getMonth() + 1;
-        const year = booking.startAt.getFullYear();
-        const day = booking.startAt.getDate();
+        const month = new Date(booking.startAt).getMonth() + 1;
+        const year = new Date(booking.startAt).getFullYear();
+        const day = new Date(booking.startAt).getDate();
 
         const bookingDate = `${year}-${month}-${day}`;
 
@@ -53,9 +47,11 @@ const CalendarView: FC<WeekViewProps> = (props) => {
   const findEvent = useCallback(
     (booking: Bookings, date: Date, hour: string): Booking | undefined => {
       return booking.find((booking) => {
-        const month = booking.startAt.getMonth() + 1;
-        const year = booking.startAt.getFullYear();
-        const day = booking.startAt.getDate();
+        const startAtAsDate = new Date(booking.startAt);
+
+        const month = startAtAsDate.getMonth() + 1;
+        const year = startAtAsDate.getFullYear();
+        const day = startAtAsDate.getDate();
 
         const bookingDate = `${year}-${month}-${day}`;
 
@@ -96,7 +92,13 @@ const CalendarView: FC<WeekViewProps> = (props) => {
       }, {} as Record<string, { existingEvent: Booking | undefined; booking: Booking | undefined }>);
       return acc;
     }, {} as Record<string, Record<string, { existingEvent: Booking | undefined; booking: Booking | undefined }>>);
-  }, [findEvent, findForExistingEvent, hours, bookings, daysWeekArray]);
+  }, [
+    bookings,
+    daysWeekArray,
+    findEvent,
+    findForExistingEvent,
+    hours.formatted,
+  ]);
 
   const roundMinutes = (minutes: number) => {
     return minutes >= 30 && minutes < 60 ? `30` : `00`;
@@ -137,7 +139,7 @@ const CalendarView: FC<WeekViewProps> = (props) => {
               if (existingEvent && booking) {
                 return (
                   <BookingCard
-                    key={`${hour}-${booking.client.id}-booking-parent`}
+                    key={`${hour}-${day}-${booking.client.id}-booking-parent`}
                     booking={booking}
                     hoursTime={hoursTime}
                     hours={hours}
@@ -149,7 +151,7 @@ const CalendarView: FC<WeekViewProps> = (props) => {
                   <EmptyCard
                     key={`${day}-${hour}-parent`}
                     dayHour={{ day, hour }}
-                    openModal={openModal}
+                    openModal={openNewBookingModal}
                   />
                 );
               } else {
@@ -160,11 +162,21 @@ const CalendarView: FC<WeekViewProps> = (props) => {
         ))}
       </>
     );
-  }, [hours, comparingWithTodaysHour, daysWeekArray, memoizedEvents]);
+  }, [
+    comparingWithTodaysHour,
+    daysWeekArray,
+    hours,
+    memoizedEvents,
+    openNewBookingModal,
+  ]);
 
   return (
     <>
-      {modal && <FormAddNewEvent closeModals={closeModal} />}
+      {eventModal && (
+        <Suspense fallback={<div>Loading...</div>}>
+          <LazyNewEventForm />
+        </Suspense>
+      )}
       {TbodyContent}
     </>
   );
