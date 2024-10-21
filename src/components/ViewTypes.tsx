@@ -1,10 +1,10 @@
-import { useContext, useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "./header-calendar/Header";
 import BOOKING_VIEW_TYPE from "../constants/booking-view";
 import DaysWeek from "./header-calendar/DaysOfWeek";
-import GlobalContext from "../context/global/global-context";
-import EventContextProvider from "../context/BookingContextProvider";
 import CalendarView from "./CalendarView";
+import BookingContextProvider from "../context/booking/BookingContextProvider";
+import useGlobal from "../hooks/useGlobal";
 
 export interface DateInfo {
   month: number;
@@ -13,7 +13,14 @@ export interface DateInfo {
 }
 
 export const ViewTypes = () => {
-  const { daysOfWeek, bookingModal, bookingType } = useContext(GlobalContext);
+  const {
+    daysOfWeek,
+    bookingType,
+    bookings,
+    handleOnGetBookings,
+    bookingResponse,
+    setBookingResponse,
+  } = useGlobal();
 
   const [dateInfo, setDateInfo] = useState<DateInfo>({
     month: new Date().getMonth(),
@@ -21,8 +28,19 @@ export const ViewTypes = () => {
     monthMessage: "",
   });
 
+  useEffect(() => {
+    handleOnGetBookings();
+  }, []);
+
+  useEffect(() => {
+    if (bookingResponse !== null) {
+      handleOnGetBookings();
+      setBookingResponse(null);
+    }
+  }, [bookingResponse, setBookingResponse, handleOnGetBookings]);
+
   return (
-    <EventContextProvider>
+    <BookingContextProvider>
       {/* <AppointmentFilterType /> */}
       <Header
         month={dateInfo.month}
@@ -40,7 +58,7 @@ export const ViewTypes = () => {
               </tr>
             </thead>
             <tbody>
-              <CalendarView daysOfWeek={daysOfWeek} />
+              <CalendarView daysOfWeek={daysOfWeek} bookings={bookings} />
             </tbody>
           </table>
         )}
@@ -53,12 +71,12 @@ export const ViewTypes = () => {
               </tr>
             </thead>
             <tbody>
-              <CalendarView daysOfWeek={daysOfWeek} />
+              <CalendarView daysOfWeek={daysOfWeek} bookings={bookings} />
             </tbody>
           </table>
         )}
       </div>
-    </EventContextProvider>
+    </BookingContextProvider>
   );
 };
 
