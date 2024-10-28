@@ -12,15 +12,26 @@ interface EmptyCardProps {
   openModal: (day: Date, hour: string) => void;
 }
 
+const blockTimes = [0, 1];
+
 const EmptyCard: FC<EmptyCardProps> = ({ dayHour, bookings, openModal }) => {
   const eventRef = useRef<HTMLDivElement>(null);
+  const holeHourRef = useRef<boolean>(false);
+  const secondBlock = useRef<boolean>(false);
+
   const handleTimeClicked = (timeType: "half" | "full") => {
     switch (timeType) {
       case "full": {
+        if (holeHourRef.current || secondBlock.current) {
+          return;
+        }
         openModal(new Date(dayHour.day), dayHour.hour);
         break;
       }
       case "half": {
+        if (holeHourRef.current) {
+          return;
+        }
         const hourAndMinutes = dayHour.hour.split(":");
         const addingMinutes = `${hourAndMinutes[0]}:30`;
 
@@ -39,48 +50,38 @@ const EmptyCard: FC<EmptyCardProps> = ({ dayHour, bookings, openModal }) => {
       return null;
     }
 
-    console.log("bookings", bookings);
-
     const actualDay = new Date(day).getDate();
 
     const actualMonthIndex = new Date(day).getMonth() + 1;
 
-    const monthEventsData = bookings[0].months.filter(
+    const monthEventsData = bookings[0].months.find(
       (month) => month.month === actualMonthIndex
     );
 
-    if (monthEventsData.length === 0) {
+    if (!monthEventsData) {
       return null;
     }
 
-    const dayEvents = monthEventsData.filter((monthEvents) => {
-      return monthEvents.days.find((daysEvent) => {
-        // console.log("actualDay", actualDay);
-        // console.log("daysEvent.day", daysEvent.day);
-        // console.log("END  ");
-
-        return daysEvent.day === actualDay;
-      });
+    const dayEvents = monthEventsData.days.filter((daysEvent) => {
+      return daysEvent.day === actualDay;
     });
 
-    if (dayEvents.length === 0) {
+    if (!dayEvents.length) {
       return null;
     }
 
-    const bookingData = dayEvents[0].days[0].bookings.find((bookingEvent) => {
+    const bookingData = dayEvents[0].bookings.filter((bookingEvent) => {
       const startTime = DateUtils.dateAndHour(bookingEvent.startAt);
       return startTime === hour;
     });
 
-    if (!bookingData) {
+    if (!bookingData.length) {
       return null;
     }
 
-    // console.log("bookingData", bookingData);
-
     const timeDiff = DateUtils.timeDiff(
-      bookingData.startAt,
-      bookingData.finishAt
+      bookingData[0].startAt,
+      bookingData[0].finishAt
     );
 
     let hight = 0;
@@ -88,12 +89,18 @@ const EmptyCard: FC<EmptyCardProps> = ({ dayHour, bookings, openModal }) => {
     const minCount = timeDiff.split(":")[1];
 
     if (Number(minCount) === 30) {
+      console.log("minCount", minCount);
+      console.log("holeHourRef.current", holeHourRef);
+
+      secondBlock.current = true;
       hight = hight + 3;
     }
 
     const hourCount = Number(timeDiff.split(":")[0]);
 
     if (hourCount >= 1) {
+      holeHourRef.current = true;
+      secondBlock.current = true;
       const hourMultiplier = hourCount * 6;
       hight = hight + hourMultiplier;
     }
@@ -113,9 +120,9 @@ const EmptyCard: FC<EmptyCardProps> = ({ dayHour, bookings, openModal }) => {
         }}
       >
         <BookingCard
-          booking={bookingData}
+          booking={bookingData[0]}
           dateDataStrings={{ day, hour }}
-          hoursTime={bookingData.startAt}
+          hoursTime={bookingData[0].startAt}
         />
       </div>
     );
