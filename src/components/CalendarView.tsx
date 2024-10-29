@@ -1,48 +1,27 @@
 import { useCallback, useMemo, lazy, Suspense } from "react";
-import { WeekViewProps } from "../@types/week-view-props";
-import { DateUtils } from "../utils/date-utils";
-import EmptyCard from "./empty-card/EmptyCard";
+import { DateUtils, WeekDaysList } from "../utils/date-utils";
 import useBooking from "../hooks/useBooking";
 import useGlobal from "../hooks/useGlobal";
 import { TableRow } from "./ui/Table";
-import { initialEvents } from "../context/global/mock-events";
 import { BookingsResponse } from "../@types/booking";
+import Slots from "./Slots/Slots";
 
 const LazyNewEventForm = lazy(() => import("../pages/forms/NewEventForm"));
 
-const mockEvent: BookingsResponse = [
-  {
-    year: 2024,
-    months: [
-      {
-        month: 10,
-        days: [
-          { day: 27, bookings: initialEvents },
-          // { day: 22, bookings: initialEvents },
-          // { day: 23, bookings: initialEvents },
-          // { day: 24, bookings: initialEvents },
-          // { day: 25, bookings: initialEvents },
-          // { day: 26, bookings: initialEvents },
-          // { day: 27, bookings: initialEvents },
-          // { day: 28, bookings: initialEvents },
-          // { day: 29, bookings: initialEvents },
-          // { day: 30, bookings: initialEvents },
-          // { day: 31, bookings: initialEvents },
-        ],
-      },
-      { month: 10, days: [] },
-    ],
-  },
-];
+interface CalendarViewProps {
+  daysOfWeek: WeekDaysList;
+  bookings: BookingsResponse;
+}
 
-const CalendarView = ({ daysOfWeek, bookings }: WeekViewProps) => {
+const CalendarView = ({ daysOfWeek, bookings }: CalendarViewProps) => {
   const { hours } = useGlobal();
   const { eventModal, openNewBookingModal } = useBooking();
 
   const daysWeekArray: string[] = useMemo(() => {
     const daysWeekArray: string[] = [];
-    daysOfWeek.forEach((value, key) => {
-      daysWeekArray.push(`${key} : ${value}`);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    daysOfWeek.forEach((value, _) => {
+      daysWeekArray.push(`${value}`);
     });
 
     return daysWeekArray;
@@ -84,7 +63,7 @@ const CalendarView = ({ daysOfWeek, bookings }: WeekViewProps) => {
             </td>
             {daysWeekArray.map((day) => {
               return (
-                <EmptyCard
+                <Slots
                   key={`${day}-${hour}-parent`}
                   dayHour={{ day, hour }}
                   bookings={bookings}
@@ -107,7 +86,7 @@ const CalendarView = ({ daysOfWeek, bookings }: WeekViewProps) => {
   return (
     <>
       {eventModal && (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense>
           <LazyNewEventForm />
         </Suspense>
       )}
