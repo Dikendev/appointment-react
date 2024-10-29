@@ -1,14 +1,12 @@
-import { FC, useContext, useMemo, useRef, useState } from "react";
+import { FC, useMemo, useRef, useState } from "react";
 import { DateUtils } from "../../utils/date-utils";
 import { Booking } from "../../@types/booking";
-import { Times } from "../../pages/hours";
 import BookingOptions, { Side } from "../booking-options/BookingOptions";
-import GlobalContext from "../../context/global/global-context";
+import useGlobal from "../../hooks/useGlobal";
 
 interface BookingCardProps {
   booking: Booking;
   hoursTime: Date;
-  hours: Times;
   dateDataStrings: {
     day: string;
     hour: string;
@@ -18,36 +16,25 @@ interface BookingCardProps {
 const BookingCard: FC<BookingCardProps> = ({
   booking,
   hoursTime,
-  hours,
   dateDataStrings,
 }) => {
-  const { bookingType } = useContext(GlobalContext);
+  const { bookingType, hours } = useGlobal();
   const [isEditingOpen, setIsEditingOpen] = useState<boolean>(false);
 
   const sideOption = useRef<Side>("left");
 
-  const calculateRowSpan = (
-    hours: string[],
-    startHour: string,
-    endHour: string
-  ) => {
-    const startIndex = hours.findIndex((hour) => hour === startHour);
-    const endIndex = hours.findIndex((hour) => hour === endHour);
-    const rowSpan = endIndex - startIndex;
-    const added = rowSpan + 1;
-    return added;
-  };
-
   const styleTest = (booking: Booking, day: Date, hoursTime: Date) => {
     const today = new Date();
-    const normalizedBookingDate = DateUtils.dateAndHour(booking.finishAt);
+    const normalizedBookingDate = DateUtils.dateAndHour(
+      new Date(booking.finishAt)
+    );
 
     if (isToday(day, today) && normalizedBookingDate <= "11:30") {
       return {
         backgroundColor: "#000000c0",
       };
     } else {
-      return { backgroundColor: `${booking.procedure.color}` };
+      return { backgroundColor: "#000456c0" };
     }
   };
 
@@ -90,46 +77,38 @@ const BookingCard: FC<BookingCardProps> = ({
   }, [bookingType]);
 
   return (
-    <>
-      <td
-        className="cursor-pointer relative"
-        key={`${dateDataStrings.day}-${dateDataStrings.hour}-${booking.client.name}`}
-        style={styleTest(
-          booking,
-          new Date(dateDataStrings.day.split(":")[1]),
-          hoursTime
-        )}
-        rowSpan={calculateRowSpan(
-          hours.formatted,
-          DateUtils.dateAndHour(booking.startAt),
-          DateUtils.dateAndHour(booking.finishAt)
-        )}
-        onClick={() => openEditingModal(dateDataStrings)}
-      >
-        <div className={`${handleStyleCardContent} text-white`}>
-          <span>{booking.client.name}</span>
-          <span>{booking.procedure.name}</span>
-          <span>
-            {`${DateUtils.dateAndHour(
-              booking.startAt
-            )} - ${DateUtils.dateAndHour(booking.finishAt)}`}
-          </span>
-          <span className="flex flex-row items-center justify-center"></span>
-        </div>
-        {isEditingOpen ? (
-          <BookingOptions
-            booking={booking}
-            onOpenChange={setIsEditingOpen}
-            side={sideOption.current}
-          />
-        ) : (
-          <span>
-            {" "}
-            <br />
-          </span>
-        )}
-      </td>
-    </>
+    <div
+      className="cursor-pointer relative w-full h-full"
+      key={`${dateDataStrings.day}-${dateDataStrings.hour}-${booking.client.name}`}
+      style={styleTest(
+        booking,
+        new Date(dateDataStrings.day.split(":")[1]),
+        hoursTime
+      )}
+      onClick={() => openEditingModal(dateDataStrings)}
+    >
+      <div className={`${handleStyleCardContent} text-white`}>
+        <span>{booking.client.name}</span>
+        <span>{booking.procedure.name}</span>
+        <span>
+          {`${DateUtils.dateAndHour(booking.startAt)} - ${DateUtils.dateAndHour(
+            booking.finishAt
+          )}`}
+        </span>
+        <span className="flex flex-row items-center justify-center"></span>
+      </div>
+      {isEditingOpen ? (
+        <BookingOptions
+          booking={booking}
+          onOpenChange={setIsEditingOpen}
+          side={sideOption.current}
+        />
+      ) : (
+        <span>
+          <br />
+        </span>
+      )}
+    </div>
   );
 };
 

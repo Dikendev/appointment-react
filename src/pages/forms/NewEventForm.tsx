@@ -36,7 +36,7 @@ import {
   PaymentType,
   paymentType,
 } from "../../@types/booking";
-import { createBooking } from "../../services/api-create-booking";
+import { createBooking } from "../../services/api-booking";
 import useGlobal from "../../hooks/useGlobal";
 import { useNewEventFormStore } from "../../context/new-event/use-new-event-store";
 
@@ -49,17 +49,6 @@ const NewEventForm = () => {
     eventModal,
     closeEventModal,
   } = useBooking();
-
-  // const { form, setFormData } = useNewEvent();
-
-  const {
-    updateDynamicForm,
-    updateStartAt,
-    updatePaymentStatus,
-    updatePaymentType,
-    updateClient,
-    updateProcedure,
-  } = useNewEventFormStore((state) => state);
 
   const form = useNewEventFormStore((state) => state);
 
@@ -80,8 +69,10 @@ const NewEventForm = () => {
     useState<PaymentStatus>("UNPAID");
 
   useEffect(() => {
-    updateStartAt(selectedHour);
-  }, [selectedHour, updateStartAt]);
+    if (selectedHour) {
+      form.updateStartAt(selectedHour);
+    }
+  }, []);
 
   //Salvar o state do modal no contexto de evento, (checar se é nesse mesmo). e salvar o fetch dos dados dos clientes e dos servicos tambem lá, para nao ficar fazendo request toda hora.
 
@@ -143,14 +134,14 @@ const NewEventForm = () => {
     setPaymentStatusSelected(status as PaymentStatus);
     const replaceSpaceToUnderscore = status.replace(" ", "_");
 
-    updatePaymentStatus(replaceSpaceToUnderscore as PaymentStatus);
+    form.updatePaymentStatus(replaceSpaceToUnderscore as PaymentStatus);
   };
 
   const handleOnPaymentTypeChange = (type: string) => {
     setPaymentTypeSelected(type as PaymentType);
     const replaceSpaceToUnderscore = type.replace(" ", "_");
 
-    updatePaymentType(replaceSpaceToUnderscore as PaymentType);
+    form.updatePaymentType(replaceSpaceToUnderscore as PaymentType);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -158,7 +149,7 @@ const NewEventForm = () => {
     console.log("name", name);
     console.log("value", value);
 
-    updateDynamicForm(name, value);
+    form.updateDynamicForm(name, value);
   };
 
   const clientCreateInputs: ModalProps["inputs"] = [
@@ -321,13 +312,13 @@ const NewEventForm = () => {
 
   const onClientSubmit = (client: Client) => {
     if (client.id) {
-      updateClient(client.id, client.name);
+      form.updateClient(client.id, client.name);
     }
   };
 
   const onProcedureSubmit = (procedure: Procedure) => {
     if (procedure.id) {
-      updateProcedure(procedure);
+      form.updateProcedure(procedure);
     }
   };
 

@@ -15,6 +15,8 @@ import { Booking, PaymentStatus } from "../../@types/booking";
 import { DateUtils, WEEK_DAYS_FULL_NAME } from "../../utils/date-utils";
 import MONTH from "../../constants/month";
 import { StringUtils } from "../../utils/string.utils";
+import { deleteBooking } from "../../services/api-booking";
+import useGlobal from "../../hooks/useGlobal";
 
 interface BookingOptionsProps {
   side: Side;
@@ -31,6 +33,8 @@ const BookingOptions: FC<BookingOptionsProps> = ({
 }) => {
   const [sideOffSet, setSideOffSet] = useState<number>(95);
   const [alignOffSet, setAlignOffSet] = useState<number>(-150);
+
+  const { handleOnGetBookings } = useGlobal();
 
   const centerSide = () => {
     setSideOffSet(-100);
@@ -111,6 +115,12 @@ const BookingOptions: FC<BookingOptionsProps> = ({
     };
   };
 
+  const handleOnDeleteBooking = async () => {
+    console.log("delete booking");
+    await deleteBooking(booking.id);
+    await handleOnGetBookings();
+  };
+
   useEffect(() => {
     handleRenderSide(side);
   }, [handleRenderSide, side]);
@@ -138,7 +148,11 @@ const BookingOptions: FC<BookingOptionsProps> = ({
             <Button variant="outline" size="icon">
               <Pencil className="h-3 w-3" />
             </Button>
-            <Button variant="outline" size="icon">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleOnDeleteBooking}
+            >
               <Trash2 className="h-3 w-3" />
             </Button>
             <SelectOptions buttons={buttonsOptions()} />

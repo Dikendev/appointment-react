@@ -4,7 +4,7 @@ import { DateUtils } from "../../utils/date-utils";
 import Card from "./Card";
 import EmptyCard from "./EmptyCard";
 import useGlobal from "../../hooks/useGlobal";
-import { patchBooking } from "../../services/api-create-booking";
+import { patchBooking } from "../../services/api-booking";
 
 interface SlotsProps {
   dayHour: {
@@ -22,6 +22,7 @@ const Slots: FC<SlotsProps> = ({ dayHour, bookings, openModal }) => {
     await patchBooking(id, body);
     handleOnGetBookings();
   };
+
   const handleTimeClicked = (timeType: "half" | "full") => {
     switch (timeType) {
       case "full": {
