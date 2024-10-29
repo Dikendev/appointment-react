@@ -1,14 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import GlobalContext from "./global-context";
-import { initialEvents } from "./mock-events";
 import generateTimes, { Times } from "../../pages/hours";
 import BOOKING_VIEW_TYPE from "../../constants/booking-view";
 import { DateUtils, WeekDaysList } from "../../utils/date-utils";
-import Loading from "../../pages/loading/Loading";
+import Loading from "../../components/loading/Loading";
+import { bookingsByYear } from "../../services/api-create-booking";
+import { BookingResponse, BookingsResponse } from "../../@types/booking";
 
 const START_TIME = "08:00";
 const END_TIME = "20:30";
-const INTERVAL = 30;
+const INTERVAL = 60;
 
 export interface NextAndPreviousWeek {
   firstDayOfWeek: Date;
@@ -20,13 +21,16 @@ export type ActionDay = "today" | "previous" | "next";
 const GlobalContextProvider: React.FC<React.PropsWithChildren<object>> = ({
   children,
 }) => {
-  const [events, setEvents] = useState(initialEvents);
+  const [events, setEvents] = useState<BookingsResponse>([]);
   const [eventModal, setEventModal] = useState<boolean>(false);
   const [hours] = useState<Times>(() =>
     generateTimes(START_TIME, END_TIME, INTERVAL)
   );
 
   const [bookingType, setBookingType] = useState<string>(BOOKING_VIEW_TYPE[1]);
+
+  const [bookingResponse, setBookingResponse] =
+    useState<BookingResponse | null>(null);
 
   const {
     week: initialWeek,
@@ -37,6 +41,7 @@ const GlobalContextProvider: React.FC<React.PropsWithChildren<object>> = ({
   const firstDayOfWeekRef = useRef(firstDayOfWeek);
   const lastDayOfWeekRef = useRef(lastDayOfWeek);
   const [week, setWeek] = useState<WeekDaysList>(initialWeek);
+  const [isLoading, setIsLoading] = useState(true);
 
   const setTodayDay = (date: Date) => {
     const todaysDayDate = DateUtils.generateDays(date, 0);
@@ -133,14 +138,20 @@ const GlobalContextProvider: React.FC<React.PropsWithChildren<object>> = ({
     firstDayOfWeekRef.current = firstDayOfWeek ? firstDayOfWeek : lastDayOfWeek;
   };
 
-  const [isLoading, setIsLoading] = useState(true);
+  const handleOnGetBookings = async (): Promise<void> => {
+    const bookings = await bookingsByYear();
+
+    if (bookings) {
+      setEvents([...bookings]);
+    }
+  };
 
   //simulating
   useEffect(() => {
     //fetch all the events initial, to render in system and fill the context.
     setTimeout(() => {
       setIsLoading(false);
-    }, 2000);
+    }, 0);
   }, []);
 
   return (
@@ -162,6 +173,9 @@ const GlobalContextProvider: React.FC<React.PropsWithChildren<object>> = ({
         handleDayChange,
         firstDayOfWeekRef,
         lastDayOfWeekRef,
+        handleOnGetBookings,
+        setBookingResponse,
+        bookingResponse,
       }}
     >
       {isLoading ? <Loading /> : children}
