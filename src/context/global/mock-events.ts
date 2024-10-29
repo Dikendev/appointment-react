@@ -31,8 +31,8 @@ const initialEvents: Bookings = [
       requiredTimeMin: 90,
     },
     payment: {
-      type: "credit card",
-      status: "paid",
+      type: "CREDIT CARD",
+      status: "PAID",
     },
     observation: "",
     total: 50,
@@ -64,28 +64,61 @@ const initialEvents: Bookings = [
       requiredTimeMin: 90,
     },
     payment: {
-      type: "debit",
-      status: "unpaid",
+      type: "CREDIT CARD",
+      status: "UNPAID",
     },
     observation: "lorem lorem lorem",
     total: 50,
     createdAt: new Date(),
     updatedAt: new Date(),
   },
+  // {
+  //   id: "1",
+  //   startAt: new Date(
+  //     today.getFullYear(),
+  //     today.getMonth(),
+  //     today.getDate(),
+  //     9,
+  //     30
+  //   ),
+  //   finishAt: new Date(
+  //     today.getFullYear(),
+  //     today.getMonth(),
+  //     today.getDate(),
+  //     10,
+  //     0o0
+  //   ),
+  //   client: user1,
+  //   procedure: {
+  //     id: "1",
+  //     color: COLORS[0],
+  //     name: "Haircut",
+  //     price: 50,
+  //     requiredTimeMin: 90,
+  //   },
+  //   payment: {
+  //     type: "CREDIT CARD",
+  //     status: "UNPAID",
+  //   },
+  //   observation: "lorem lorem lorem",
+  //   total: 50,
+  //   createdAt: new Date(),
+  //   updatedAt: new Date(),
+  // },
   {
     id: "1",
     startAt: new Date(
       today.getFullYear(),
       today.getMonth(),
-      today.getDate() + 5,
-      9,
+      today.getDate(),
+      11,
       0o0
     ),
     finishAt: new Date(
       today.getFullYear(),
       today.getMonth(),
-      today.getDate() + 1,
-      11,
+      today.getDate(),
+      12,
       30
     ),
     client: user1,
@@ -97,8 +130,41 @@ const initialEvents: Bookings = [
       requiredTimeMin: 90,
     },
     payment: {
-      type: "pix",
-      status: "unpaid",
+      type: "CREDIT CARD",
+      status: "UNPAID",
+    },
+    observation: "lorem lorem lorem",
+    total: 50,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "1",
+    startAt: new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate() + 1,
+      10,
+      0o0
+    ),
+    finishAt: new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate() + 1,
+      11,
+      0o0
+    ),
+    client: user1,
+    procedure: {
+      id: "1",
+      color: COLORS[0],
+      name: "Haircut",
+      price: 50,
+      requiredTimeMin: 90,
+    },
+    payment: {
+      type: "PIX",
+      status: "UNPAID",
     },
     observation: "lorem lorem lorem",
     total: 50,
@@ -130,8 +196,8 @@ const initialEvents: Bookings = [
       requiredTimeMin: 90,
     },
     payment: {
-      type: "debit",
-      status: "paid",
+      type: "DEBIT",
+      status: "PAID",
     },
     observation: "",
     total: 530,
@@ -163,8 +229,8 @@ const initialEvents: Bookings = [
       requiredTimeMin: 90,
     },
     payment: {
-      type: "credit card",
-      status: "pending",
+      type: "DEBIT",
+      status: "PENDING",
     },
     observation: "lorem lorem lorem",
     total: 530,
