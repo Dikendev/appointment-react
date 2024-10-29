@@ -5,13 +5,13 @@ import {
   SetStateAction,
 } from "react";
 import { ActionDay, NextAndPreviousWeek } from "./GlobalContextProvider";
-import { Bookings } from "../../@types/booking";
+import { BookingResponse, BookingsResponse } from "../../@types/booking";
 import { Times } from "../../pages/hours";
 import { WeekDaysList } from "../../utils/date-utils";
 
 interface GlobalContextType {
-  bookings: Bookings;
-  setBookings: Dispatch<SetStateAction<Bookings>>;
+  bookings: BookingsResponse;
+  setBookings: Dispatch<SetStateAction<BookingsResponse>>;
   bookingModal: boolean;
   setBookingModal: Dispatch<SetStateAction<boolean>>;
   closeModal: Dispatch<SetStateAction<boolean>>;
@@ -26,6 +26,9 @@ interface GlobalContextType {
   handleDayChange: (actionDay: ActionDay) => WeekDaysList | undefined;
   firstDayOfWeekRef: MutableRefObject<Date>;
   lastDayOfWeekRef: MutableRefObject<Date>;
+  handleOnGetBookings: () => void;
+  setBookingResponse: Dispatch<SetStateAction<BookingResponse | null>>;
+  bookingResponse: BookingResponse | null;
 }
 
 const GlobalContext = createContext<GlobalContextType>({
@@ -48,6 +51,9 @@ const GlobalContext = createContext<GlobalContextType>({
   handleDayChange: () => new Map(),
   firstDayOfWeekRef: { current: new Date() },
   lastDayOfWeekRef: { current: new Date() },
+  handleOnGetBookings: () => {},
+  bookingResponse: null,
+  setBookingResponse: () => {},
 });
 
 export default GlobalContext;
