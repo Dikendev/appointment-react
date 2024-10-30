@@ -1,10 +1,8 @@
 import { CSSProperties, FC } from "react";
-import { Booking, BookingDto, BookingsResponse } from "../../@types/booking";
+import { Booking, BookingsResponse } from "../../@types/booking";
 import { DateUtils } from "../../utils/date-utils";
 import Card from "./Card";
 import EmptyCard from "./EmptyCard";
-import useGlobal from "../../hooks/useGlobal";
-import { patchBooking } from "../../services/api-booking";
 
 interface SlotsProps {
   dayHour: {
@@ -16,13 +14,6 @@ interface SlotsProps {
 }
 
 const Slots: FC<SlotsProps> = ({ dayHour, bookings, openModal }) => {
-  const { handleOnGetBookings } = useGlobal();
-
-  const updateBooking = async (id: string, body: Partial<BookingDto>) => {
-    await patchBooking(id, body);
-    handleOnGetBookings();
-  };
-
   const handleTimeClicked = (timeType: "half" | "full") => {
     switch (timeType) {
       case "full": {
@@ -50,10 +41,8 @@ const Slots: FC<SlotsProps> = ({ dayHour, bookings, openModal }) => {
       return (
         <EmptyCard
           calendar={{ day, hour }}
-          bookings={bookings}
           timeWithAddedMinutes={timeWithAddedMinutes}
           handleTimeClicked={handleTimeClicked}
-          patchBooking={updateBooking}
         />
       );
     }
@@ -68,10 +57,8 @@ const Slots: FC<SlotsProps> = ({ dayHour, bookings, openModal }) => {
       return (
         <EmptyCard
           calendar={{ day, hour }}
-          bookings={bookings}
           timeWithAddedMinutes={timeWithAddedMinutes}
           handleTimeClicked={handleTimeClicked}
-          patchBooking={updateBooking}
         />
       );
     }
@@ -84,10 +71,8 @@ const Slots: FC<SlotsProps> = ({ dayHour, bookings, openModal }) => {
       return (
         <EmptyCard
           calendar={{ day, hour }}
-          bookings={bookings}
           timeWithAddedMinutes={timeWithAddedMinutes}
           handleTimeClicked={handleTimeClicked}
-          patchBooking={updateBooking}
         />
       );
     }
@@ -108,10 +93,8 @@ const Slots: FC<SlotsProps> = ({ dayHour, bookings, openModal }) => {
       return (
         <EmptyCard
           calendar={{ day, hour }}
-          bookings={bookings}
           timeWithAddedMinutes={timeWithAddedMinutes}
           handleTimeClicked={handleTimeClicked}
-          patchBooking={updateBooking}
         />
       );
     }
@@ -164,7 +147,7 @@ const Slots: FC<SlotsProps> = ({ dayHour, bookings, openModal }) => {
         <>
           <div
             key={`${day}-${hour}-empty`}
-            className="w-full h-[3rem] relative"
+            className="w-full h-[3rem] relative border-b border-gray-200"
             onClick={() => handleTimeClicked("full")}
           >
             <div className="w-[8rem]"></div>
@@ -189,7 +172,7 @@ const Slots: FC<SlotsProps> = ({ dayHour, bookings, openModal }) => {
         <>
           <div
             key={`${day}-${hour}-empty`}
-            className="w-full h-[3rem] relative"
+            className="w-full h-[3rem] relative border-b border-gray-200"
           >
             <Card
               heightStyle={heightStyle}

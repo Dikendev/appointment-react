@@ -1,7 +1,7 @@
 import { CSSProperties } from "react";
 import { Booking } from "../../@types/booking";
-import * as dnd from "react-dnd";
 import BookingCard from "../booking-card/BookingCard";
+import { useDraggable } from "@dnd-kit/core";
 
 interface CardProps {
   heightStyle: CSSProperties;
@@ -12,25 +12,23 @@ interface CardProps {
 }
 
 const Card = ({ heightStyle, booking, day, hour, hoursTime }: CardProps) => {
-  const [{ isDragging }, drag, preview] = dnd.useDrag(
-    () => ({
-      type: "ALL",
-      item: { booking },
-      collect: (monitor) => ({
-        isDragging: !!monitor.isDragging(),
-      }),
-    }),
-    [booking]
-  );
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: booking.id,
+    data: { booking },
+  });
+  const style = transform
+    ? {
+        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+      }
+    : undefined;
 
   return (
     <div
-      ref={drag}
+      ref={setNodeRef}
       className="bg-black text-white w-[90%] absolute z-10 border rounded-sm shadow-[5px_5px_8px_2px_rgba(0,0,0,0.3)] overflow-hidden"
-      style={{
-        ...heightStyle,
-        opacity: isDragging ? 0.5 : 1,
-      }}
+      style={{ ...style, ...heightStyle }}
+      {...listeners}
+      {...attributes}
     >
       <BookingCard
         booking={booking}
