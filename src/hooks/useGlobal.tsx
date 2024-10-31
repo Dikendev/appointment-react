@@ -2,41 +2,9 @@ import { useContext } from "react";
 import GlobalContext from "../context/global/global-context";
 
 const useGlobal = () => {
-  const {
-    bookings,
-    setBookings,
-    hours,
-    bookingType,
-    todayWeek,
-    nextWeek,
-    previousWeek,
-    setTodayDay,
-    handleDayChange,
-    firstDayOfWeekRef,
-    lastDayOfWeekRef,
-    handleOnGetBookings,
-    daysOfWeek,
-    bookingResponse,
-    setBookingResponse,
-  } = useContext(GlobalContext);
+  const globalContext = useContext(GlobalContext);
 
-  return {
-    bookings,
-    setBookings,
-    hours,
-    bookingType,
-    todayWeek,
-    nextWeek,
-    previousWeek,
-    setTodayDay,
-    handleDayChange,
-    firstDayOfWeekRef,
-    lastDayOfWeekRef,
-    handleOnGetBookings,
-    daysOfWeek,
-    bookingResponse,
-    setBookingResponse,
-  };
+  return { ...globalContext };
 };
 
 export default useGlobal;
