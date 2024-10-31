@@ -7,10 +7,15 @@ import GlobalContext from "../../context/global/global-context";
 
 interface DaysWeekProps {
   daysOfWeek: WeekDaysList;
+  bookingType: "DAY" | "WEEK";
   setDateInfo: Dispatch<SetStateAction<DateInfo>>;
 }
 
-const DaysWeek: FC<DaysWeekProps> = ({ setDateInfo, daysOfWeek }) => {
+const DaysWeek: FC<DaysWeekProps> = ({
+  setDateInfo,
+  daysOfWeek,
+  bookingType,
+}) => {
   const { setTodayDay, setBookingType } = useContext(GlobalContext);
 
   const updateDateInfo = useCallback(
@@ -41,10 +46,12 @@ const DaysWeek: FC<DaysWeekProps> = ({ setDateInfo, daysOfWeek }) => {
 
   const trs: JSX.Element[] = [];
 
+  const dayStyle = bookingType === "DAY" ? "text-start" : "text-center";
+
   daysOfWeek.forEach((day, dayOfWeek) =>
     trs.push(
       <th key={dayOfWeek} className="py-2 px-4">
-        <div className="flex flex-col gap-[3px] text-gray-500">
+        <div className={`flex flex-col gap-[3px] text-gray-500 ${dayStyle}`}>
           <span>{dayOfWeek}</span>
           <div className="w-full">
             <span
