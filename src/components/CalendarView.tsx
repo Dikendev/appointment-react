@@ -3,8 +3,10 @@ import { DateUtils, WeekDaysList } from "../utils/date-utils";
 import useBooking from "../hooks/useBooking";
 import useGlobal from "../hooks/useGlobal";
 import { TableRow } from "./ui/Table";
-import { BookingsResponse } from "../@types/booking";
-import Slots from "./Slots/Slots";
+import { Booking, BookingDto, BookingsResponse } from "../@types/booking";
+import Slots from "./slots/Slots";
+import { DndContext } from "@dnd-kit/core";
+import { patchBooking } from "../services/api-booking";
 
 const LazyNewEventForm = lazy(() => import("../pages/forms/NewEventForm"));
 
@@ -14,7 +16,7 @@ interface CalendarViewProps {
 }
 
 const CalendarView = ({ daysOfWeek, bookings }: CalendarViewProps) => {
-  const { hours } = useGlobal();
+  const { hours, handleOnGetBookings } = useGlobal();
   const { eventModal, openNewBookingModal } = useBooking();
 
   const daysWeekArray: string[] = useMemo(() => {
@@ -42,6 +44,51 @@ const CalendarView = ({ daysOfWeek, bookings }: CalendarViewProps) => {
 
     return nowFullTime === DateUtils.dateAndHour(date);
   }, []);
+
+  function handleDragEnd(event) {
+    const { over, active } = event;
+
+    if (over && active) {
+      handleOnDrop(active.data.current.booking, over.id);
+    }
+  }
+
+  const updateBooking = async (id: string, body: Partial<BookingDto>) => {
+    await patchBooking(id, body);
+    handleOnGetBookings();
+  };
+
+  const getTimeDiff = (startTime: Date, endTime: Date) => {
+    const diffInMs = Number(new Date(endTime)) - Number(new Date(startTime));
+    const diffInMinutes = Math.floor(diffInMs / 1000 / 60);
+
+    const hours = Math.floor(diffInMinutes / 60);
+    const minutes = diffInMinutes % 60;
+    return `${hours}:${minutes.toString().padStart(2, "0")}`;
+  };
+
+  const newFinishAt = (newStartAt: string, timeString: string) => {
+    const newDay = new Date(newStartAt);
+
+    const splitTimeString = timeString.split(":");
+    const hour = Number(splitTimeString[0]);
+    const minutes = Number(splitTimeString[1]);
+
+    newDay.setHours(newDay.getHours() + hour);
+    newDay.setMinutes(newDay.getMinutes() + minutes);
+    return newDay;
+  };
+
+  const handleOnDrop = (booking: Booking, targetDayString: string) => {
+    const timeDiff = getTimeDiff(booking.startAt, booking.finishAt);
+    const newStartAt = new Date(targetDayString);
+    const newFinishDate = newFinishAt(targetDayString, timeDiff);
+
+    updateBooking(booking.id, {
+      startAt: newStartAt,
+      finishAt: newFinishDate,
+    });
+  };
 
   const TbodyContent = useMemo(() => {
     return (
@@ -90,7 +137,7 @@ const CalendarView = ({ daysOfWeek, bookings }: CalendarViewProps) => {
           <LazyNewEventForm />
         </Suspense>
       )}
-      {TbodyContent}
+      <DndContext onDragEnd={handleDragEnd}>{TbodyContent}</DndContext>
     </>
   );
 };
