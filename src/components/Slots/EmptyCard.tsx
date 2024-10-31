@@ -1,45 +1,30 @@
-import { useDroppable } from "@dnd-kit/core";
+import { CSSProperties } from "react";
 
 interface EmptyCardProps {
-  calendar: {
-    day: string;
-    hour: string;
+  full: {
+    key: string;
+    style: CSSProperties;
+    ref: (element: HTMLElement | null) => void;
   };
-  timeWithAddedMinutes: string;
+  half: {
+    key: string;
+    style: CSSProperties;
+    ref: (element: HTMLElement | null) => void;
+  };
   handleTimeClicked: (timeType: "half" | "full") => void;
 }
+
 const EmptyCard = ({
-  calendar: { day, hour },
-  timeWithAddedMinutes,
+  full: { key: fullKey, style: fullStyle, ref: fullHouRef },
+  half: { key: halfKey, style: styleHalf, ref: halfHourRef },
   handleTimeClicked,
 }: EmptyCardProps) => {
-  const newDateKey = (date: string, hour: string) => {
-    const newDate = new Date(date);
-    newDate.setHours(Number(hour.split(":")[0]));
-    newDate.setMinutes(Number(hour.split(":")[1]));
-    return newDate.toISOString();
-  };
-
-  const { isOver, setNodeRef } = useDroppable({
-    id: `${newDateKey(day, hour)}`,
-  });
-  const style = {
-    backgroundColor: isOver ? "green" : "",
-  };
-
-  const { isOver: isOverHalf, setNodeRef: setNodeRefHalf } = useDroppable({
-    id: `${newDateKey(day, timeWithAddedMinutes)}`,
-  });
-  const styleHalf = {
-    backgroundColor: isOverHalf ? "green" : "",
-  };
-
   return (
     <>
       <div
-        ref={setNodeRef}
-        style={style}
-        key={newDateKey(day, hour)}
+        ref={fullHouRef}
+        style={fullStyle}
+        key={fullKey}
         className="w-full h-[3rem] relative border-b border-gray-200"
         onClick={() => handleTimeClicked("full")}
       >
@@ -47,9 +32,9 @@ const EmptyCard = ({
       </div>
 
       <div
-        ref={setNodeRefHalf}
+        ref={halfHourRef}
         style={styleHalf}
-        key={newDateKey(day, timeWithAddedMinutes)}
+        key={halfKey}
         className="w-full h-[3rem] relative"
         onClick={() => handleTimeClicked("half")}
       >
