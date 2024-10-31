@@ -41,9 +41,9 @@ const BookingContextProvider: FC<PropsWithChildren<object>> = ({
     "17:00",
   ]);
 
-  const openNewBookingModal = (date: Date, hour: string) => {
-    setSelectedDate(date);
-    setSelectedHour(hour);
+  const openNewBookingModal = (date?: Date, hour?: string) => {
+    if (date) setSelectedDate(date);
+    if (hour) setSelectedHour(hour);
     setEventModal(true);
   };
 
