@@ -3,6 +3,7 @@ import { Booking, BookingsResponse } from "../../@types/booking";
 import { DateUtils } from "../../utils/date-utils";
 import Card from "./Card";
 import EmptyCard from "./EmptyCard";
+import { useDroppable } from "@dnd-kit/core";
 
 interface SlotsProps {
   dayHour: {
@@ -34,14 +35,43 @@ const Slots: FC<SlotsProps> = ({ dayHour, bookings, openModal }) => {
     }
   };
 
-  const findEvent = (day: string, hour: string) => {
-    const timeWithAddedMinutes = DateUtils.addMinuteToHour(hour, 30);
+  const newDateKey = (date: string, hour: string) => {
+    const newDate = new Date(date);
+    newDate.setHours(Number(hour.split(":")[0]));
+    newDate.setMinutes(Number(hour.split(":")[1]));
+    return newDate.toISOString();
+  };
 
+  const timeWithAddedMinutes = DateUtils.addMinuteToHour(dayHour.hour, 30);
+
+  const { isOver, setNodeRef } = useDroppable({
+    id: `${newDateKey(dayHour.day, dayHour.hour)}`,
+  });
+  const style: CSSProperties = {
+    backgroundColor: isOver ? "green" : "",
+  };
+
+  const { isOver: isOverHalf, setNodeRef: setNodeRefHalf } = useDroppable({
+    id: `${newDateKey(dayHour.day, timeWithAddedMinutes)}`,
+  });
+  const styleHalf: CSSProperties = {
+    backgroundColor: isOverHalf ? "green" : "",
+  };
+
+  const findEvent = (day: string, hour: string) => {
     if (bookings.length === 0) {
       return (
         <EmptyCard
-          calendar={{ day, hour }}
-          timeWithAddedMinutes={timeWithAddedMinutes}
+          full={{
+            ref: setNodeRef,
+            style: style,
+            key: newDateKey(dayHour.day, dayHour.hour),
+          }}
+          half={{
+            ref: setNodeRefHalf,
+            style: styleHalf,
+            key: newDateKey(dayHour.day, timeWithAddedMinutes),
+          }}
           handleTimeClicked={handleTimeClicked}
         />
       );
@@ -56,8 +86,16 @@ const Slots: FC<SlotsProps> = ({ dayHour, bookings, openModal }) => {
     if (!monthEventsData) {
       return (
         <EmptyCard
-          calendar={{ day, hour }}
-          timeWithAddedMinutes={timeWithAddedMinutes}
+          full={{
+            ref: setNodeRef,
+            style: style,
+            key: newDateKey(dayHour.day, dayHour.hour),
+          }}
+          half={{
+            ref: setNodeRefHalf,
+            style: styleHalf,
+            key: newDateKey(dayHour.day, timeWithAddedMinutes),
+          }}
           handleTimeClicked={handleTimeClicked}
         />
       );
@@ -70,8 +108,16 @@ const Slots: FC<SlotsProps> = ({ dayHour, bookings, openModal }) => {
     if (!dayEvents.length) {
       return (
         <EmptyCard
-          calendar={{ day, hour }}
-          timeWithAddedMinutes={timeWithAddedMinutes}
+          full={{
+            ref: setNodeRef,
+            style: style,
+            key: newDateKey(dayHour.day, dayHour.hour),
+          }}
+          half={{
+            ref: setNodeRefHalf,
+            style: styleHalf,
+            key: newDateKey(dayHour.day, timeWithAddedMinutes),
+          }}
           handleTimeClicked={handleTimeClicked}
         />
       );
@@ -92,8 +138,16 @@ const Slots: FC<SlotsProps> = ({ dayHour, bookings, openModal }) => {
     if (!bookingData.length) {
       return (
         <EmptyCard
-          calendar={{ day, hour }}
-          timeWithAddedMinutes={timeWithAddedMinutes}
+          full={{
+            ref: setNodeRef,
+            style: style,
+            key: newDateKey(dayHour.day, dayHour.hour),
+          }}
+          half={{
+            ref: setNodeRefHalf,
+            style: styleHalf,
+            key: newDateKey(dayHour.day, timeWithAddedMinutes),
+          }}
           handleTimeClicked={handleTimeClicked}
         />
       );
@@ -122,12 +176,26 @@ const Slots: FC<SlotsProps> = ({ dayHour, bookings, openModal }) => {
       height: `${hight}rem`,
     };
 
+    const full = {
+      key: newDateKey(dayHour.day, dayHour.hour),
+      style: style,
+      ref: setNodeRef,
+    };
+
+    const half = {
+      key: newDateKey(dayHour.day, timeWithAddedMinutes),
+      style: styleHalf,
+      ref: setNodeRefHalf,
+    };
+
     return handlePosition(
       heightStyle,
       bookingData[0],
       day,
       hour,
-      bookingData[0].startAt
+      bookingData[0].startAt,
+      full,
+      half
     );
   };
 
@@ -136,17 +204,28 @@ const Slots: FC<SlotsProps> = ({ dayHour, bookings, openModal }) => {
     booking: Booking,
     day: string,
     hour: string,
-    hoursTime: Date
+    hoursTime: Date,
+    full: {
+      key: string;
+      style: CSSProperties;
+      ref: (element: HTMLElement | null) => void;
+    },
+    half: {
+      key: string;
+      style: CSSProperties;
+      ref: (element: HTMLElement | null) => void;
+    }
   ) => {
     const timeString = DateUtils.dateAndHour(booking.startAt);
     const isBlockTime = timeString.split(":")[1] === "30";
-    const timeWithAddedMinutes = DateUtils.addMinuteToHour(timeString, 30);
 
     if (isBlockTime) {
       return (
         <>
           <div
-            key={`${day}-${hour}-empty`}
+            ref={full.ref}
+            style={full.style}
+            key={full.key}
             className="w-full h-[3rem] relative border-b border-gray-200"
             onClick={() => handleTimeClicked("full")}
           >
@@ -154,7 +233,9 @@ const Slots: FC<SlotsProps> = ({ dayHour, bookings, openModal }) => {
           </div>
 
           <div
-            key={`${day}-${timeWithAddedMinutes}-empty`}
+            ref={half.ref}
+            style={half.style}
+            key={half.key}
             className="w-full h-[3rem] relative"
           >
             <Card
@@ -171,7 +252,9 @@ const Slots: FC<SlotsProps> = ({ dayHour, bookings, openModal }) => {
       return (
         <>
           <div
-            key={`${day}-${hour}-empty`}
+            ref={full.ref}
+            style={full.style}
+            key={full.key}
             className="w-full h-[3rem] relative border-b border-gray-200"
           >
             <Card
@@ -184,7 +267,9 @@ const Slots: FC<SlotsProps> = ({ dayHour, bookings, openModal }) => {
           </div>
 
           <div
-            key={`${day}-${timeWithAddedMinutes}-empty`}
+            ref={half.ref}
+            style={half.style}
+            key={half.key}
             className="w-full h-[3rem] relative"
             onClick={() => handleTimeClicked("half")}
           >
@@ -197,7 +282,7 @@ const Slots: FC<SlotsProps> = ({ dayHour, bookings, openModal }) => {
 
   return (
     <td
-      key={`${dayHour.day}-${dayHour.hour}-empty`}
+      key={`${dayHour.day}-${dayHour.hour}-slot`}
       className="bg-white border border-gray-300 w-[30rem]"
       rowSpan={1}
     >
