@@ -1,9 +1,8 @@
 import { CSSProperties, FC } from "react";
-import { Booking, BookingsResponse } from "../../@types/booking";
+import { BookingsResponse } from "../../@types/booking";
 import { DateUtils } from "../../utils/date-utils";
-import Card from "./Card";
 import EmptyCard from "./EmptyCard";
-import { useDroppable } from "@dnd-kit/core";
+import CardPosition from "./CardPosition";
 
 interface SlotsProps {
   dayHour: {
@@ -11,11 +10,24 @@ interface SlotsProps {
     hour: string;
   };
   bookings: BookingsResponse;
+  lunchTimeBlock: {
+    startAt: string;
+    finishAt: string;
+  };
   openModal: (day: Date, hour: string) => void;
 }
 
-const Slots: FC<SlotsProps> = ({ dayHour, bookings, openModal }) => {
+const Slots: FC<SlotsProps> = ({
+  dayHour,
+  bookings,
+  openModal,
+  lunchTimeBlock: { startAt, finishAt },
+}) => {
   const handleTimeClicked = (timeType: "half" | "full") => {
+    if (isTimeLunch(dayHour.hour)) {
+      return;
+    }
+
     switch (timeType) {
       case "full": {
         openModal(new Date(dayHour.day), dayHour.hour);
@@ -24,7 +36,6 @@ const Slots: FC<SlotsProps> = ({ dayHour, bookings, openModal }) => {
       case "half": {
         const hourAndMinutes = dayHour.hour.split(":");
         const addingMinutes = `${hourAndMinutes[0]}:30`;
-
         openModal(new Date(dayHour.day), `${addingMinutes}`);
         break;
       }
@@ -35,44 +46,24 @@ const Slots: FC<SlotsProps> = ({ dayHour, bookings, openModal }) => {
     }
   };
 
-  const newDateKey = (date: string, hour: string) => {
-    const newDate = new Date(date);
-    newDate.setHours(Number(hour.split(":")[0]));
-    newDate.setMinutes(Number(hour.split(":")[1]));
-    return newDate.toISOString();
-  };
+  let disabledCss = "";
 
-  const timeWithAddedMinutes = DateUtils.addMinuteToHour(dayHour.hour, 30);
-
-  const { isOver, setNodeRef } = useDroppable({
-    id: `${newDateKey(dayHour.day, dayHour.hour)}`,
-  });
-  const style: CSSProperties = {
-    backgroundColor: isOver ? "green" : "",
-  };
-
-  const { isOver: isOverHalf, setNodeRef: setNodeRefHalf } = useDroppable({
-    id: `${newDateKey(dayHour.day, timeWithAddedMinutes)}`,
-  });
-  const styleHalf: CSSProperties = {
-    backgroundColor: isOverHalf ? "green" : "",
+  const isTimeLunch = (hour: string) => {
+    if (hour === startAt || hour === finishAt) {
+      disabledCss = "bg-gray-200 border-none cursor-not-allowed";
+      return true;
+    }
+    return false;
   };
 
   const findEvent = (day: string, hour: string) => {
     if (bookings.length === 0) {
       return (
         <EmptyCard
-          full={{
-            ref: setNodeRef,
-            style: style,
-            key: newDateKey(dayHour.day, dayHour.hour),
-          }}
-          half={{
-            ref: setNodeRefHalf,
-            style: styleHalf,
-            key: newDateKey(dayHour.day, timeWithAddedMinutes),
-          }}
+          dayHour={dayHour}
+          lunchTimeBlock={{ startAt, finishAt }}
           handleTimeClicked={handleTimeClicked}
+          disabledCss={disabledCss}
         />
       );
     }
@@ -86,17 +77,10 @@ const Slots: FC<SlotsProps> = ({ dayHour, bookings, openModal }) => {
     if (!monthEventsData) {
       return (
         <EmptyCard
-          full={{
-            ref: setNodeRef,
-            style: style,
-            key: newDateKey(dayHour.day, dayHour.hour),
-          }}
-          half={{
-            ref: setNodeRefHalf,
-            style: styleHalf,
-            key: newDateKey(dayHour.day, timeWithAddedMinutes),
-          }}
+          dayHour={dayHour}
+          lunchTimeBlock={{ startAt, finishAt }}
           handleTimeClicked={handleTimeClicked}
+          disabledCss={disabledCss}
         />
       );
     }
@@ -108,17 +92,10 @@ const Slots: FC<SlotsProps> = ({ dayHour, bookings, openModal }) => {
     if (!dayEvents.length) {
       return (
         <EmptyCard
-          full={{
-            ref: setNodeRef,
-            style: style,
-            key: newDateKey(dayHour.day, dayHour.hour),
-          }}
-          half={{
-            ref: setNodeRefHalf,
-            style: styleHalf,
-            key: newDateKey(dayHour.day, timeWithAddedMinutes),
-          }}
+          dayHour={dayHour}
+          lunchTimeBlock={{ startAt, finishAt }}
           handleTimeClicked={handleTimeClicked}
+          disabledCss={disabledCss}
         />
       );
     }
@@ -138,17 +115,10 @@ const Slots: FC<SlotsProps> = ({ dayHour, bookings, openModal }) => {
     if (!bookingData.length) {
       return (
         <EmptyCard
-          full={{
-            ref: setNodeRef,
-            style: style,
-            key: newDateKey(dayHour.day, dayHour.hour),
-          }}
-          half={{
-            ref: setNodeRefHalf,
-            style: styleHalf,
-            key: newDateKey(dayHour.day, timeWithAddedMinutes),
-          }}
+          dayHour={dayHour}
+          lunchTimeBlock={{ startAt, finishAt }}
           handleTimeClicked={handleTimeClicked}
+          disabledCss={disabledCss}
         />
       );
     }
@@ -176,115 +146,22 @@ const Slots: FC<SlotsProps> = ({ dayHour, bookings, openModal }) => {
       height: `${hight}rem`,
     };
 
-    const full = {
-      key: newDateKey(dayHour.day, dayHour.hour),
-      style: style,
-      ref: setNodeRef,
-    };
-
-    const half = {
-      key: newDateKey(dayHour.day, timeWithAddedMinutes),
-      style: styleHalf,
-      ref: setNodeRefHalf,
-    };
-
-    return handlePosition(
-      heightStyle,
-      bookingData[0],
-      day,
-      hour,
-      bookingData[0].startAt,
-      full,
-      half
+    return (
+      <CardPosition
+        heightStyle={heightStyle}
+        booking={bookingData[0]}
+        day={day}
+        hour={hour}
+        hoursTime={bookingData[0].startAt}
+        handleTimeClicked={handleTimeClicked}
+      />
     );
-  };
-
-  const handlePosition = (
-    heightStyle: CSSProperties,
-    booking: Booking,
-    day: string,
-    hour: string,
-    hoursTime: Date,
-    full: {
-      key: string;
-      style: CSSProperties;
-      ref: (element: HTMLElement | null) => void;
-    },
-    half: {
-      key: string;
-      style: CSSProperties;
-      ref: (element: HTMLElement | null) => void;
-    }
-  ) => {
-    const timeString = DateUtils.dateAndHour(booking.startAt);
-    const isBlockTime = timeString.split(":")[1] === "30";
-
-    if (isBlockTime) {
-      return (
-        <>
-          <div
-            ref={full.ref}
-            style={full.style}
-            key={full.key}
-            className="w-full h-[3rem] relative border-b border-gray-200"
-            onClick={() => handleTimeClicked("full")}
-          >
-            <div className="w-[8rem]"></div>
-          </div>
-
-          <div
-            ref={half.ref}
-            style={half.style}
-            key={half.key}
-            className="w-full h-[3rem] relative"
-          >
-            <Card
-              heightStyle={heightStyle}
-              booking={booking}
-              day={day}
-              hour={hour}
-              hoursTime={hoursTime}
-            />
-          </div>
-        </>
-      );
-    } else {
-      return (
-        <>
-          <div
-            ref={full.ref}
-            style={full.style}
-            key={full.key}
-            className="w-full h-[3rem] relative border-b border-gray-200"
-          >
-            <Card
-              heightStyle={heightStyle}
-              booking={booking}
-              day={day}
-              hour={hour}
-              hoursTime={hoursTime}
-            />
-          </div>
-
-          <div
-            ref={half.ref}
-            style={half.style}
-            key={half.key}
-            className="w-full h-[3rem] relative"
-            onClick={() => handleTimeClicked("half")}
-          >
-            <div className="w-[8rem]"></div>
-          </div>
-        </>
-      );
-    }
   };
 
   return (
     <td
       key={`${dayHour.day}-${dayHour.hour}-slot`}
       className="bg-white border border-gray-300 w-[30rem]"
-      rowSpan={1}
     >
       {findEvent(dayHour.day, dayHour.hour)}
     </td>
