@@ -2,6 +2,7 @@ import { CSSProperties, FC } from "react";
 import { BookingsResponse } from "../../@types/booking";
 import { DateUtils } from "../../utils/date-utils";
 import EmptyCard from "./EmptyCard";
+import { useDroppable } from "@dnd-kit/core";
 import CardPosition from "./CardPosition";
 
 interface SlotsProps {
@@ -46,6 +47,15 @@ const Slots: FC<SlotsProps> = ({
     }
   };
 
+  const newDateKey = (date: string, hour: string) => {
+    const newDate = new Date(date);
+    newDate.setHours(Number(hour.split(":")[0]));
+    newDate.setMinutes(Number(hour.split(":")[1]));
+    return newDate.toISOString();
+  };
+
+  const timeWithAddedMinutes = DateUtils.addMinuteToHour(dayHour.hour, 30);
+
   let disabledCss = "";
 
   const isTimeLunch = (hour: string) => {
@@ -56,12 +66,38 @@ const Slots: FC<SlotsProps> = ({
     return false;
   };
 
+  const { isOver, setNodeRef } = useDroppable({
+    id: `${newDateKey(dayHour.day, dayHour.hour)}`,
+    disabled: isTimeLunch(dayHour.hour),
+  });
+
+  const style: CSSProperties = {
+    backgroundColor: isOver ? "green" : "",
+  };
+
+  const { isOver: isOverHalf, setNodeRef: setNodeRefHalf } = useDroppable({
+    id: `${newDateKey(dayHour.day, timeWithAddedMinutes)}`,
+    disabled: isTimeLunch(timeWithAddedMinutes),
+  });
+
+  const styleHalf: CSSProperties = {
+    backgroundColor: isOverHalf ? "green" : "",
+  };
+
   const findEvent = (day: string, hour: string) => {
     if (bookings.length === 0) {
       return (
         <EmptyCard
-          dayHour={dayHour}
-          lunchTimeBlock={{ startAt, finishAt }}
+          full={{
+            ref: setNodeRef,
+            style: style,
+            key: newDateKey(dayHour.day, dayHour.hour),
+          }}
+          half={{
+            ref: setNodeRefHalf,
+            style: styleHalf,
+            key: newDateKey(dayHour.day, timeWithAddedMinutes),
+          }}
           handleTimeClicked={handleTimeClicked}
           disabledCss={disabledCss}
         />
@@ -77,8 +113,16 @@ const Slots: FC<SlotsProps> = ({
     if (!monthEventsData) {
       return (
         <EmptyCard
-          dayHour={dayHour}
-          lunchTimeBlock={{ startAt, finishAt }}
+          full={{
+            ref: setNodeRef,
+            style: style,
+            key: newDateKey(dayHour.day, dayHour.hour),
+          }}
+          half={{
+            ref: setNodeRefHalf,
+            style: styleHalf,
+            key: newDateKey(dayHour.day, timeWithAddedMinutes),
+          }}
           handleTimeClicked={handleTimeClicked}
           disabledCss={disabledCss}
         />
@@ -92,8 +136,16 @@ const Slots: FC<SlotsProps> = ({
     if (!dayEvents.length) {
       return (
         <EmptyCard
-          dayHour={dayHour}
-          lunchTimeBlock={{ startAt, finishAt }}
+          full={{
+            ref: setNodeRef,
+            style: style,
+            key: newDateKey(dayHour.day, dayHour.hour),
+          }}
+          half={{
+            ref: setNodeRefHalf,
+            style: styleHalf,
+            key: newDateKey(dayHour.day, timeWithAddedMinutes),
+          }}
           handleTimeClicked={handleTimeClicked}
           disabledCss={disabledCss}
         />
@@ -115,8 +167,16 @@ const Slots: FC<SlotsProps> = ({
     if (!bookingData.length) {
       return (
         <EmptyCard
-          dayHour={dayHour}
-          lunchTimeBlock={{ startAt, finishAt }}
+          full={{
+            ref: setNodeRef,
+            style: style,
+            key: newDateKey(dayHour.day, dayHour.hour),
+          }}
+          half={{
+            ref: setNodeRefHalf,
+            style: styleHalf,
+            key: newDateKey(dayHour.day, timeWithAddedMinutes),
+          }}
           handleTimeClicked={handleTimeClicked}
           disabledCss={disabledCss}
         />
@@ -146,12 +206,26 @@ const Slots: FC<SlotsProps> = ({
       height: `${hight}rem`,
     };
 
+    const full = {
+      key: newDateKey(dayHour.day, dayHour.hour),
+      style: style,
+      ref: setNodeRef,
+    };
+
+    const half = {
+      key: newDateKey(dayHour.day, timeWithAddedMinutes),
+      style: styleHalf,
+      ref: setNodeRefHalf,
+    };
+
     return (
       <CardPosition
         heightStyle={heightStyle}
-        booking={bookingData[0]}
         day={day}
         hour={hour}
+        full={full}
+        half={half}
+        booking={bookingData[0]}
         hoursTime={bookingData[0].startAt}
         handleTimeClicked={handleTimeClicked}
       />
