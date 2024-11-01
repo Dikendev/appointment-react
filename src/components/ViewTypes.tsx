@@ -39,6 +39,27 @@ export const ViewTypes = () => {
     }
   }, [bookingResponse, setBookingResponse, handleOnGetBookings]);
 
+  const bookingTypeRender = () => {
+    const dayCss = BOOKING_VIEW_TYPE[0] ? "pl-4 pr-4" : "";
+    return (
+      <table className={`min-w-full w-full bg-white no-border-sides ${dayCss}`}>
+        <thead className="text-black sticky top-0 z-[50] bg-white">
+          <tr>
+            <th key="hours" className="py-2 px-4"></th>
+            <DaysWeek
+              setDateInfo={setDateInfo}
+              daysOfWeek={daysOfWeek}
+              bookingType={bookingType}
+            />
+          </tr>
+        </thead>
+        <tbody className="w-full">
+          <CalendarView daysOfWeek={daysOfWeek} bookings={bookings} />
+        </tbody>
+      </table>
+    );
+  };
+
   return (
     <BookingContextProvider>
       {/* <AppointmentFilterType /> */}
@@ -48,33 +69,8 @@ export const ViewTypes = () => {
         monthMessage={dateInfo.monthMessage}
         setDateInfo={setDateInfo}
       />
-      <div className="relative max-h-[600px] overflow-auto mt-2">
-        {bookingType === BOOKING_VIEW_TYPE[1] && (
-          <table className="min-w-full w-full bg-white no-border-sides">
-            <thead className="text-black sticky top-0 z-10 bg-white">
-              <tr>
-                <th key="hours" className="py-2 px-4"></th>
-                <DaysWeek setDateInfo={setDateInfo} daysOfWeek={daysOfWeek} />
-              </tr>
-            </thead>
-            <tbody>
-              <CalendarView daysOfWeek={daysOfWeek} bookings={bookings} />
-            </tbody>
-          </table>
-        )}
-        {bookingType === BOOKING_VIEW_TYPE[0] && (
-          <table className="min-w-full w-full bg-white no-border-sides pl-4 pr-4">
-            <thead className="text-black sticky top-0 z-10 bg-white">
-              <tr>
-                <th key="hours" className="py-2 px-4"></th>
-                <DaysWeek setDateInfo={setDateInfo} daysOfWeek={daysOfWeek} />
-              </tr>
-            </thead>
-            <tbody>
-              <CalendarView daysOfWeek={daysOfWeek} bookings={bookings} />
-            </tbody>
-          </table>
-        )}
+      <div className="relative max-h-[650px] w-full overflow-auto mt-2">
+        {bookingTypeRender()}
       </div>
     </BookingContextProvider>
   );
