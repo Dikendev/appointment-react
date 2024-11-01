@@ -1,6 +1,5 @@
 import { CSSProperties } from "react";
 import { Booking } from "../../@types/booking";
-import { useDroppable } from "@dnd-kit/core";
 import { DateUtils } from "../../utils/date-utils";
 import Card from "./Card";
 
@@ -10,6 +9,16 @@ interface CardPositionProps {
   day: string;
   hour: string;
   hoursTime: Date;
+  full: {
+    key: string;
+    style: CSSProperties;
+    ref: (element: HTMLElement | null) => void;
+  };
+  half: {
+    key: string;
+    style: CSSProperties;
+    ref: (element: HTMLElement | null) => void;
+  };
   handleTimeClicked: (timeType: "half" | "full") => void;
 }
 
@@ -19,33 +28,10 @@ const CardPosition = ({
   day,
   hour,
   hoursTime,
+  full,
+  half,
   handleTimeClicked,
 }: CardPositionProps) => {
-  const newDateKey = (date: string, hour: string) => {
-    const newDate = new Date(date);
-    newDate.setHours(Number(hour.split(":")[0]));
-    newDate.setMinutes(Number(hour.split(":")[1]));
-    return newDate.toISOString();
-  };
-
-  const timeWithAddedMinutes = DateUtils.addMinuteToHour(hour, 30);
-
-  const { isOver, setNodeRef } = useDroppable({
-    id: `${newDateKey(day, hour)}`,
-  });
-
-  const style: CSSProperties = {
-    backgroundColor: isOver ? "green" : "",
-  };
-
-  const { isOver: isOverHalf, setNodeRef: setNodeRefHalf } = useDroppable({
-    id: `${newDateKey(day, timeWithAddedMinutes)}`,
-  });
-
-  const styleHalf: CSSProperties = {
-    backgroundColor: isOverHalf ? "green" : "",
-  };
-
   const timeString = DateUtils.dateAndHour(booking.startAt);
   const isBlockTime = timeString.split(":")[1] === "30";
 
@@ -53,9 +39,9 @@ const CardPosition = ({
     return (
       <>
         <div
-          ref={setNodeRef}
-          style={style}
-          key={`${newDateKey(day, hour)}`}
+          ref={full.ref}
+          style={full.style}
+          key={full.key}
           className="w-full h-[3rem] relative border-b border-gray-200"
           onClick={() => handleTimeClicked("full")}
         >
@@ -63,9 +49,9 @@ const CardPosition = ({
         </div>
 
         <div
-          ref={setNodeRefHalf}
-          style={styleHalf}
-          key={`${newDateKey(day, timeWithAddedMinutes)}`}
+          ref={half.ref}
+          style={half.style}
+          key={half.key}
           className="w-full h-[3rem] relative"
         >
           <Card
@@ -82,9 +68,9 @@ const CardPosition = ({
     return (
       <>
         <div
-          ref={setNodeRef}
-          style={style}
-          key={`${newDateKey(day, hour)}`}
+          ref={full.ref}
+          style={full.style}
+          key={full.key}
           className="w-full h-[3rem] relative border-b border-gray-200"
         >
           <Card
@@ -96,9 +82,9 @@ const CardPosition = ({
           />
         </div>
         <div
-          ref={setNodeRefHalf}
-          style={styleHalf}
-          key={`${newDateKey(day, timeWithAddedMinutes)}`}
+          ref={half.ref}
+          style={half.style}
+          key={half.key}
           className="w-full h-[3rem] relative"
           onClick={() => handleTimeClicked("half")}
         >
