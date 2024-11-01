@@ -1,8 +1,11 @@
 import { CSSProperties } from "react";
 import { Booking } from "../../@types/booking";
 import BookingCard from "../booking-card/BookingCard";
-import { useDraggable } from "@dnd-kit/core";
+import { useDraggable, DragOverlay } from "@dnd-kit/core";
 import { GripHorizontal } from "lucide-react";
+import { restrictToWindowEdges } from "@dnd-kit/modifiers";
+import useBooking from "../../hooks/useBooking";
+import { CSS } from "@dnd-kit/utilities";
 
 interface CardProps {
   heightStyle: CSSProperties;
@@ -13,38 +16,80 @@ interface CardProps {
 }
 
 const Card = ({ heightStyle, booking, day, hour, hoursTime }: CardProps) => {
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    isDragging,
+    setActivatorNodeRef,
+    over,
+  } = useDraggable({
     id: booking.id,
     data: { booking },
   });
 
+  const { isBookingLoading } = useBooking();
+
   const style = transform
     ? {
-        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+        transform: CSS.Translate.toString(transform),
+        over,
       }
     : undefined;
 
   return (
-    <div
-      ref={setNodeRef}
-      className="bg-black text-white w-[90%] absolute z-10 border rounded-sm shadow-[5px_5px_8px_2px_rgba(0,0,0,0.3)] overflow-hidden"
-      style={{ ...style, ...heightStyle }}
-      {...attributes}
-    >
-      <div className="flex flex-row justify-end w-full h-[2rem] bg-blue-500">
+    <>
+      {!isDragging ? (
         <div
-          className="flex flex-row justify-center items-center w-12 cursor-move"
-          {...listeners}
+          ref={setNodeRef}
+          className={`bg-black ${
+            isBookingLoading ? "hidden" : ""
+          } text-white w-[90%] absolute z-10 border rounded-sm shadow-[5px_5px_8px_2px_rgba(0,0,0,0.3)] overflow-hidden`}
+          style={{ ...style, ...heightStyle }}
         >
-          <GripHorizontal />
+          <div
+            ref={setActivatorNodeRef}
+            {...listeners}
+            {...attributes}
+            className="flex flex-row justify-end w-full h-[2rem] bg-blue-500"
+          >
+            <div className="flex flex-row justify-center items-center w-12 cursor-move">
+              <GripHorizontal />
+            </div>
+          </div>
+          <BookingCard
+            booking={booking}
+            dateDataStrings={{ day, hour }}
+            hoursTime={hoursTime}
+          />
         </div>
-      </div>
-      <BookingCard
-        booking={booking}
-        dateDataStrings={{ day, hour }}
-        hoursTime={hoursTime}
-      />
-    </div>
+      ) : (
+        <DragOverlay
+          modifiers={[restrictToWindowEdges]}
+          dropAnimation={{
+            duration: 3000,
+            easing: "cubic-bezier(0.18, 0.67, 0.6, 1.22)",
+          }}
+        >
+          <div
+            className=" text-white w-[97%] absolute z-10 border rounded-sm shadow-[5px_5px_8px_2px_rgba(0,0,0,0.3)] overflow-hidden"
+            style={{ ...heightStyle }}
+          >
+            <div className="flex flex-row justify-end w-full h-[2rem] bg-blue-500">
+              <div className="flex flex-row justify-center items-center w-12 cursor-move">
+                <GripHorizontal />
+              </div>
+            </div>
+            <BookingCard
+              booking={booking}
+              dateDataStrings={{ day, hour }}
+              hoursTime={hoursTime}
+            />
+          </div>
+        </DragOverlay>
+      )}
+    </>
   );
 };
 
