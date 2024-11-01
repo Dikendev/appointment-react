@@ -1,19 +1,13 @@
-import {
-  Dispatch,
-  FC,
-  SetStateAction,
-  useCallback,
-  useContext,
-  useEffect,
-} from "react";
+import { Dispatch, FC, SetStateAction, useCallback, useEffect } from "react";
 import MONTH from "../../constants/month";
 import { DateUtils } from "../../utils/date-utils";
 import BOOKING_VIEW_TYPE from "../../constants/booking-view";
 import { DateInfo } from "../ViewTypes";
 import { Button } from "../ui/Button";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon, CirclePlus } from "lucide-react";
 import SelectOptions from "./SelectItem";
-import GlobalContext from "../../context/global/global-context";
+import useGlobal from "../../hooks/useGlobal";
+import useBooking from "../../hooks/useBooking";
 
 export type ActionType = "next" | "previous";
 
@@ -38,7 +32,9 @@ const Header: FC<HeaderProps> = ({
     setBookingType,
     setTodayDay,
     handleDayChange,
-  } = useContext(GlobalContext);
+  } = useGlobal();
+
+  const { eventModal, openNewBookingModal } = useBooking();
 
   const updateDateInfo = useCallback(
     (targetDate: Date) => {
@@ -201,8 +197,11 @@ const Header: FC<HeaderProps> = ({
   }, []);
 
   return (
-    <header className="flex flex-row gap-2 justify-between w-full">
-      <div>LOGO</div>
+    <header className="flex flex-row gap-2 justify-between w-full px-6">
+      <button onClick={() => openNewBookingModal()}>
+        <CirclePlus />
+      </button>
+
       <div className="flex flex-row">
         <div className="flex flex-row gap-2">
           <Button variant="outline" onClick={todayDay}>
