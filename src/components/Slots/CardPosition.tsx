@@ -4,11 +4,9 @@ import { DateUtils } from "../../utils/date-utils";
 import Card from "./Card";
 
 interface CardPositionProps {
-  heightStyle: CSSProperties;
   booking: Booking;
   day: string;
   hour: string;
-  hoursTime: Date;
   full: {
     key: string;
     style: CSSProperties;
@@ -23,11 +21,9 @@ interface CardPositionProps {
 }
 
 const CardPosition = ({
-  heightStyle,
   booking,
   day,
   hour,
-  hoursTime,
   full,
   half,
   handleTimeClicked,
@@ -54,13 +50,7 @@ const CardPosition = ({
           key={half.key}
           className="w-full h-[3rem] relative"
         >
-          <Card
-            heightStyle={heightStyle}
-            booking={booking}
-            day={day}
-            hour={hour}
-            hoursTime={hoursTime}
-          />
+          <Card booking={booking} day={day} hour={hour} />
         </div>
       </>
     );
@@ -73,13 +63,7 @@ const CardPosition = ({
           key={full.key}
           className="w-full h-[3rem] relative border-b border-gray-200"
         >
-          <Card
-            heightStyle={heightStyle}
-            booking={booking}
-            day={day}
-            hour={hour}
-            hoursTime={hoursTime}
-          />
+          <Card booking={booking} day={day} hour={hour} />
         </div>
         <div
           ref={half.ref}
