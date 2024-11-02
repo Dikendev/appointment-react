@@ -13,7 +13,6 @@ interface EmptyCardProps {
   };
   disabledCss: string;
   handleTimeClicked: (timeType: "half" | "full") => void;
-  children?: React.ReactNode;
 }
 
 const EmptyCard = forwardRef(
@@ -22,7 +21,6 @@ const EmptyCard = forwardRef(
     half: { key: halfKey, style: styleHalf, ref: halfHourRef },
     disabledCss,
     handleTimeClicked,
-    children,
   }: EmptyCardProps) => {
     return (
       <>
@@ -33,7 +31,7 @@ const EmptyCard = forwardRef(
           className={`w-full h-[3rem] relative border-b border-gray-200 ${disabledCss}`}
           onClick={() => handleTimeClicked("full")}
         >
-          {children ? children : <div className="w-[8rem]"></div>}
+          <div key={fullKey} className="w-[8rem]"></div>
         </div>
 
         <div
@@ -43,7 +41,7 @@ const EmptyCard = forwardRef(
           className={`w-full h-[3rem] relative ${disabledCss}`}
           onClick={() => handleTimeClicked("half")}
         >
-          {children ? children : <div className="w-[8rem]"></div>}
+          <div key={fullKey} className="w-[8rem]"></div>
         </div>
       </>
     );
