@@ -6,16 +6,15 @@ import { GripHorizontal } from "lucide-react";
 import { restrictToWindowEdges } from "@dnd-kit/modifiers";
 import useBooking from "../../hooks/useBooking";
 import { CSS } from "@dnd-kit/utilities";
+import { DateUtils } from "../../utils/date-utils";
 
 interface CardProps {
-  heightStyle: CSSProperties;
   booking: Booking;
   day: string;
   hour: string;
-  hoursTime: Date;
 }
 
-const Card = ({ heightStyle, booking, day, hour, hoursTime }: CardProps) => {
+const Card = ({ booking, day, hour }: CardProps) => {
   const {
     attributes,
     listeners,
@@ -23,7 +22,6 @@ const Card = ({ heightStyle, booking, day, hour, hoursTime }: CardProps) => {
     transform,
     isDragging,
     setActivatorNodeRef,
-    over,
   } = useDraggable({
     id: booking.id,
     data: { booking },
@@ -34,9 +32,18 @@ const Card = ({ heightStyle, booking, day, hour, hoursTime }: CardProps) => {
   const style = transform
     ? {
         transform: CSS.Translate.toString(transform),
-        over,
       }
     : undefined;
+
+  const timeDiff = DateUtils.timeDiff(booking.finishAt, booking.startAt);
+
+  console.log("timediff", timeDiff);
+
+  const hight = timeDiff / 10;
+
+  const heightStyle: CSSProperties = {
+    height: `${hight}rem`,
+  };
 
   return (
     <>
@@ -58,20 +65,10 @@ const Card = ({ heightStyle, booking, day, hour, hoursTime }: CardProps) => {
               <GripHorizontal />
             </div>
           </div>
-          <BookingCard
-            booking={booking}
-            dateDataStrings={{ day, hour }}
-            hoursTime={hoursTime}
-          />
+          <BookingCard booking={booking} dateDataStrings={{ day, hour }} />
         </div>
       ) : (
-        <DragOverlay
-          modifiers={[restrictToWindowEdges]}
-          dropAnimation={{
-            duration: 3000,
-            easing: "cubic-bezier(0.18, 0.67, 0.6, 1.22)",
-          }}
-        >
+        <DragOverlay modifiers={[restrictToWindowEdges]} dropAnimation={null}>
           <div
             className=" text-white w-[97%] absolute z-10 border rounded-sm shadow-[5px_5px_8px_2px_rgba(0,0,0,0.3)] overflow-hidden"
             style={{ ...heightStyle }}
@@ -81,11 +78,7 @@ const Card = ({ heightStyle, booking, day, hour, hoursTime }: CardProps) => {
                 <GripHorizontal />
               </div>
             </div>
-            <BookingCard
-              booking={booking}
-              dateDataStrings={{ day, hour }}
-              hoursTime={hoursTime}
-            />
+            <BookingCard booking={booking} dateDataStrings={{ day, hour }} />
           </div>
         </DragOverlay>
       )}
